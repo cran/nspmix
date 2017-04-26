@@ -1,0 +1,229 @@
+\name{cnmms}
+\alias{cnmms}
+\alias{cnmpl}
+\alias{cnmap}
+
+%- Also NEED an '\alias' for EACH other topic documented here.
+
+\title{Maximum Likelihood Estimation of a Semiparametric Mixture Model}
+
+\description{
+  
+  Functions \code{cnmms}, \code{cnmpl} and \code{cnmap} can be used to
+  compute the maximum likelihood estimate of a semiparametric mixture
+  model that has a one-dimensional mixing parameter. The types of
+  mixture models that can be computed include finite, nonparametric and
+  semiparametric ones.
+
+  Function \code{cnmms} can also be used to compute the maximum
+  likelihood estimate of a finite or nonparametric mixture model.
+  
+}
+
+\usage{
+
+cnmms(x, init=NULL, maxit=1000, model=c("spmle","npmle"), tol=1e-4,
+      grid=100, kmax=Inf, plot=c("null", "gradient", "probability"),
+      verbose=0)
+
+cnmpl(x, init=NULL, tol=1e-4, tol.npmle=tol*1e-4, grid=100, maxit=1000,
+      plot=c("null", "gradient", "probability"), verbose=0)
+
+cnmap(x, init=NULL, maxit=1000, tol=1e-4, grid=100, plot=c("null",
+      "gradient"), verbose=0)
+
+}
+
+\arguments{
+  
+  \item{x}{a data object of some class that can be defined fully by the user}
+  
+  \item{init}{list of user-provided initial values for the mixing
+  distribution \code{mix} and the structural parameter \code{beta}} 
+  
+  \item{model}{the type of model that is to estimated: non-parametric
+    MLE (\code{npmle}) or semi-parametric MLE (spmle). }
+  
+  \item{maxit}{maximum number of iterations}
+  
+  \item{tol}{a tolerance value that is used to terminate an
+    algorithm. Specifically, the algorithm is terminated, if the
+    relative increase of the log-likelihood value after an iteration is
+    less than \code{tol}. If an algorithm converges rapidly enough, then
+    \code{-log10(tol)} is roughly the number of accurate digits in
+    log-likelihood.}
+
+  \item{tol.npmle}{a tolerance value that is used to terminate the
+    computing of the NPMLE internally.}
+
+  \item{grid}{number of grid points that are used by the algorithm to
+    locate all the local maxima of the gradient function. A larger
+    number increases the chance of locating all local maxima, at the
+    expense of an increased computational cost. The locations of the
+    grid points are determined by the function \code{gridpoints}
+    provided by each individual mixture family, and they do not have to
+    be equally spaced. If needed, an individual \code{gridpoints}
+    function may return a different number of grid points than specified
+    by \code{grid}.}
+
+  \item{kmax}{upper bound on the number of support points. This is
+    useful for fitting a finite mixture model.}
+
+  \item{plot}{whether a plot is produced at each iteration. Useful for
+    monitoring the convergence of the algorithm. If \code{null}, no plot
+    is produced. If \code{gradient}, it plots the gradient curves and if
+    \code{probability}, the \code{plot} function defined by the user of
+    the class is used.}
+
+  \item{verbose}{verbosity level for printing intermediate results in
+    each iteration, including none (= 0), the log-likelihood value (=
+    1), the maximum gradient (= 2), the support points of the mixing
+    distribution (= 3), the mixing proportions (= 4), and if available,
+    the value of the structural parameter beta (= 5).}
+  
+}
+
+\details{
+  
+  A finite mixture model has a density of the form
+
+  \deqn{f(x; \pi, \theta, \beta) = \sum_{j=1}^k \pi_j f(x; \theta_j, \beta).}{f(x; pi, theta, beta) = sum_{j=1}^k pi_j f(x; theta_j, beta),}
+  
+  where \eqn{pi_j \ge 0}{pi_j >= 0} and \eqn{\sum_{j=1}^k pi_j
+  =1}{sum_{j=1}^k pi_j =1}. 
+
+  A nonparametric mixture model has a density of the form
+
+  \deqn{f(x; G) = \int f(x; \theta) d G(\theta),}{f(x; G) = Integral f(x; theta) d G(theta),}
+  where \eqn{G} is a mixing distribution that is completely
+  unspecified. The maximum likelihood estimate of the
+  nonparametric \eqn{G}, or the NPMLE of $\eqn{G}, is known to be a
+  discrete distribution function.
+  
+  A semiparametric mixture model has a density of the form
+
+  \deqn{f(x; G, \beta) = \int f(x; \theta, \beta) d G(\theta),}{f(x; G, beta) = Int f(x; theta, beta) d G(theta),}
+  
+  where \eqn{G} is a mixing distribution that is completely unspecified and
+  \eqn{\beta}{beta} is the structural parameter.
+
+  Of the three functions, \code{cnmms} is recommended for most problems;
+  see Wang (2010).
+
+  Functions \code{cnmms}, \code{cnmpl} and \code{cnmap} implement the
+  algorithms CNM-MS, CNM-PL and CNM-AP that are described in Wang
+  (2010). Their implementations are generic using S3 object-oriented
+  programming, in the sense that they can work for an arbitrary family
+  of mixture models that is defined by the user. The user, however,
+  needs to supply the implementations of the following functions for
+  their self-defined family of mixture models, as they are needed
+  internally by the functions above:
+
+  \code{initial(x, beta, mix, kmax)}
+  
+  \code{valid(x, beta)}
+
+  \code{logd(x, beta, pt, which)}
+
+  \code{gridpoints(x, beta, grid)}
+  
+  \code{suppspace(x, beta)}
+
+  \code{length(x)}
+
+  \code{print(x, ...)}
+
+  \code{weights(x, ...)}
+
+  While not needed by the algorithms, one may also implement
+  
+  \code{plot(x, mix, beta, ...)}
+
+  so that the fitted model can be shown graphically in a way that the
+  user desires.
+
+  For creating a new class, the user may consult the implementations of
+  these functions for the families of mixture models included in the
+  package, e.g., \code{cvp} and \code{mlogit}. 
+
+}
+
+\value{
+  
+  \item{family}{the class of the mixture family that is used to fit to
+                the data.}
+  
+  \item{num.iterations}{Number of iterations required by the algorithm}
+  
+  \item{grad}{For \code{cnmms}, it contains the values of the gradient
+              function at the support points and the first derivatives
+              of the log-likelihood with respect to theta and beta. For
+              \code{cnmpl}, it contains only the first derivatives of
+              the log-likelihood with respect to beta. For \code{cnmap},
+              it contains only the gradient of \code{beta}.}
+  
+  \item{max.gradient}{Maximum value of the gradient function, evaluated
+                      at the beginning of the final iteration. It is only
+                      given by function \code{cnmap}.}
+  
+  \item{convergence}{convergence code. \code{=0} means a success, and
+        \code{=1} reaching the maximum number of iterations}
+  
+  \item{ll}{log-likelihood value at convergence}
+  
+  \item{mix}{MLE of the mixing distribution, being an object of the
+             class \code{disc} for discrete distributions}
+  
+  \item{beta}{MLE of the structural parameter}
+  
+}
+
+\author{ Yong Wang <yongwang@auckland.ac.nz>}
+
+\references{
+
+  Wang, Y. (2007). On fast computation of the non-parametric maximum
+  likelihood estimate of a mixing distribution. \emph{Journal of the
+  Royal Statistical Society, Ser. B}, \bold{69}, 185-198.
+
+  Wang, Y. (2010). Maximum likelihood computation for fitting
+  semiparametric mixture models. \emph{Statistics and Computing},
+  \bold{20}, 75-86
+
+}
+
+\seealso{ \code{\link{nnls}}, \code{\link{cnm}}, \code{\link{cvp}},
+  \code{\link{cvps}}, \code{\link{mlogit}}. }
+
+\examples{
+## Compute the MLE of a finite mixture
+x = rnpnorm(200, mu=c(0,4), pr=c(0.7,0.3), sd=1)
+for(k in 1:6) plot(cnmms(x, kmax=k), x, add=(k>1), comp=FALSE, col=k+1,
+                   main="Finite Normal Mixtures")
+legend("topright", 0.3, leg=paste0("k = ",1:6), lty=1, lwd=2, col=2:7)
+
+## Compute a semiparametric MLE
+# Common variance problem 
+x = rcvps(k=100, ni=5:10, mu=c(0,4), pr=c(0.7,0.3), sd=3)
+cnmms(x)            # CNM-MS algorithm
+cnmpl(x)            # CNM-PL algorithm
+cnmap(x)            # CNM-AP algorithm
+
+# Logistic regression with a random intercept
+x = rmlogit(k=100, gi=3:5, ni=6:10, pt=c(0,4), pr=c(0.7,0.3),
+            beta=c(0,3))    
+cnmms(x)
+
+
+### Real-world data
+# Random intercept logistic model
+data(toxo)
+cnmms(mlogit(toxo))
+
+data(betablockers)
+cnmms(mlogit(betablockers))
+
+data(lungcancer)
+cnmms(mlogit(lungcancer))
+}
+\keyword{ function }   % at least one, from doc/KEYWORDS

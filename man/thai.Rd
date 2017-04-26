@@ -1,0 +1,57 @@
+\name{thai}
+\alias{thai}
+
+\docType{data}
+
+\title{
+  Illness Spells and Frequencies of Thai Preschool Children
+}
+
+\description{
+
+  Contains the results of a cohort study in north-east Thailand in which
+  602 preschool children participated. For each child, the number of
+  illness spells \eqn{x}, such as fever, cough or running nose, is
+  recorded for all 2-week periods from June 1982 to September 1985. The
+  frequency for each value of \eqn{x} is saved in the data set. 
+
+}
+
+\usage{thai}
+
+\format{ A data frame with 24 rows and 2 variables:
+  
+  x: values of \eqn{x}.
+
+  freq: frequencies for each value of \eqn{x}.
+
+}
+
+\source{
+
+  Bohning, D. (2000). \emph{Computer-assisted Analysis of Mixtures and
+  Applications: Meta-analysis, Disease Mapping, and Others}. Boca Raton:
+  Chapman and Hall-CRC.
+
+}
+
+\references{
+
+  Wang, Y. (2007). On fast computation of the non-parametric maximum
+  likelihood estimate of a mixing distribution. \emph{Journal of the
+  Royal Statistical Society, Ser. B}, \bold{69}, 185-198.
+
+}
+
+\seealso{ \code{\link{nppois}},\code{\link{cnm}}. }
+
+\examples{
+
+data(thai)
+x = nppois(thai)
+plot(cnm(x), x)
+
+}
+
+\keyword{datasets}
+

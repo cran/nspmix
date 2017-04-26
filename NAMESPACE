@@ -1,0 +1,21 @@
+import(lsei)
+importFrom("graphics", "barplot", "hist", "lines", "plot", "points", "rect",
+           "segments")
+importFrom("methods", "getFunction")
+importFrom("stats", "binomial", "dnorm", "dpois", "glm", "pnorm", "quantile",
+           "rbinom", "rmultinom", "rnorm", "var", "weighted.mean", "weights")
+export(cnm,cnmms,cnmpl,cnmap)
+S3method(plot,nspmix)
+export(plotgrad)
+export(npnorm,rnpnorm)
+S3method(plot,npnorm)
+export(nppois,rnppois)
+S3method(plot,nppois)
+export(rcvp,cvps,rcvps)
+S3method(print,cvps)
+export(disc)
+S3method(print,disc)
+export(mlogit,rmlogit)
+export(whist)
+
+# exportPattern("^[^\\.]")
