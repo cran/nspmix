@@ -30,9 +30,7 @@ rnppois = function(n, lambda=1, pr=1) {
   d = d / sum(d)
   w = drop(rmultinom(1,n,d))
   j = w != 0
-  r = list(v=x[j], w=w[j])
-  class(r) = "nppois"
-  r
+  structure(list(v=x[j], w=w[j]), class="nppois")
 }
 
 nppois = function(v, w=1) {
@@ -44,8 +42,7 @@ nppois = function(v, w=1) {
     if((is.data.frame(v) || is.matrix(v)) && ncol(v) == 2)
       r = list(v=v[,1], w=v[,2]*w)
     else r = list(v=v, w=w)
-    class(r) = "nppois"
-    r
+    structure(r, class="nppois")
   }
 }
 
@@ -94,7 +91,7 @@ logd.nppois = function(x, beta, pt, which=c(1,0,0)) {
   names(dl) = c("ld","db","dt")
   n = length(x$v)
   k = length(pt)
-  rpt = rep(pmax(pt, 1e-100), each=n)
+  rpt = rep(pmax(pt, 1e-100), rep(n,k))
   if(which[1] == 1) {
     dl$ld = x$v * log(rpt) - rpt - lfactorial(x$v)
     dim(dl$ld) = c(n, k)
@@ -107,7 +104,7 @@ logd.nppois = function(x, beta, pt, which=c(1,0,0)) {
 }
 
 plot.nppois = function(x, mix, beta, col="red", add=FALSE,
-                      components=TRUE, main="Poisson Mixture", lwd=1,
+                      components=TRUE, main="nppois", lwd=1,
                       lty=1, xlab="Data", ylab="Density", ...) {
   ptr = range(mix$pt)
   if(is.null(x))

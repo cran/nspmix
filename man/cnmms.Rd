@@ -3,8 +3,6 @@
 \alias{cnmpl}
 \alias{cnmap}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
-
 \title{Maximum Likelihood Estimation of a Semiparametric Mixture Model}
 
 \description{
@@ -22,14 +20,14 @@
 
 \usage{
 
-cnmms(x, init=NULL, maxit=1000, model=c("spmle","npmle"), tol=1e-4,
+cnmms(x, init=NULL, maxit=1000, model=c("spmle","npmle"), tol=1e-6,
       grid=100, kmax=Inf, plot=c("null", "gradient", "probability"),
       verbose=0)
 
-cnmpl(x, init=NULL, tol=1e-4, tol.npmle=tol*1e-4, grid=100, maxit=1000,
+cnmpl(x, init=NULL, tol=1e-6, tol.npmle=tol*1e-4, grid=100, maxit=1000,
       plot=c("null", "gradient", "probability"), verbose=0)
 
-cnmap(x, init=NULL, maxit=1000, tol=1e-4, grid=100, plot=c("null",
+cnmap(x, init=NULL, maxit=1000, tol=1e-6, grid=100, plot=c("null",
       "gradient"), verbose=0)
 
 }
@@ -42,7 +40,7 @@ cnmap(x, init=NULL, maxit=1000, tol=1e-4, grid=100, plot=c("null",
   distribution \code{mix} and the structural parameter \code{beta}} 
   
   \item{model}{the type of model that is to estimated: non-parametric
-    MLE (\code{npmle}) or semi-parametric MLE (spmle). }
+    MLE (\code{npmle}) or semi-parametric MLE (\code{spmle}). }
   
   \item{maxit}{maximum number of iterations}
   
@@ -198,7 +196,7 @@ cnmap(x, init=NULL, maxit=1000, tol=1e-4, grid=100, plot=c("null",
 \examples{
 ## Compute the MLE of a finite mixture
 x = rnpnorm(200, mu=c(0,4), pr=c(0.7,0.3), sd=1)
-for(k in 1:6) plot(cnmms(x, kmax=k), x, add=(k>1), comp=FALSE, col=k+1,
+for(k in 1:6) plot(cnmms(x, kmax=k), x, add=(k>1), comp="null", col=k+1,
                    main="Finite Normal Mixtures")
 legend("topright", 0.3, leg=paste0("k = ",1:6), lty=1, lwd=2, col=2:7)
 

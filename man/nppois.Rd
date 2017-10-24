@@ -27,8 +27,8 @@
 nppois(v, w=1)
 rnppois(n, lambda=1, pr=1)
 \method{plot}{nppois}(x, mix, beta, col="red", add=FALSE,
-                      components=TRUE, main="Poisson Mixture", lwd=1,
-                      lty=1, xlab="Data", ylab="Density", ...)
+     components=TRUE, main="nppois", lwd=1, lty=1, xlab="Data",
+     ylab="Density", ...)
 
 }
 

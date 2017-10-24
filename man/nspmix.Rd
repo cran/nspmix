@@ -18,7 +18,7 @@
 
 \usage{
 
-\method{plot}{nspmix}(x, data, fn=c("probability","gradient"), ...)
+\method{plot}{nspmix}(x, data, type=c("probability","gradient"), ...)
 
 }
 
@@ -28,7 +28,7 @@
   
   \item{data}{a data set from the mixture model} 
   
-  \item{fn}{the type of function to be plotted: the probability model of
+  \item{type}{the type of function to be plotted: the probability model of
     the mixture family (\code{probability}), or the gradient function
     (\code{gradient}). }
   

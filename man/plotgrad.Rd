@@ -14,10 +14,9 @@
 \usage{
 
 plotgrad(x, mix, beta, len=500, order=0, col="blue", col2="red",
-         add=FALSE, main=paste0("Class: ",class(x)),
-         xlab=expression(theta),
-         ylab=paste0("Gradient (order = ",order,")"), cex=1, pch=1,
-         xlim, ylim, ...)
+    add=FALSE, main=paste0("Class: ",class(x)), xlab=expression(theta),
+    ylab=paste0("Gradient (order = ",order,")"), cex=1, pch=1, lwd=1,
+    xlim, ylim, ...)
 
 }
 
@@ -25,9 +24,9 @@ plotgrad(x, mix, beta, len=500, order=0, col="blue", col2="red",
   
   \item{x}{a data object of a mixture model class.}
   
-  \item{beta}{the structural parameter.} 
-  
   \item{mix}{an object of class 'disc', for a discrete mixing distribution.}
+  
+  \item{beta}{the structural parameter.} 
   
   \item{len}{number of points used to plot the smooth curve.}
   
@@ -38,10 +37,10 @@ plotgrad(x, mix, beta, len=500, order=0, col="blue", col2="red",
   
   \item{col2}{color for the support points.}
   
-  \item{add}{if \code{FALSE}, create a new plot; if \code{FALSE}, add
+  \item{add}{if \code{FALSE}, create a new plot; if \code{TRUE}, add
     the curve and points to the current one.}
   
-  \item{main, xlab, ylab, cex, pch, xlim, ylim}{arguments for graphical
+  \item{main, xlab, ylab, cex, pch, lwd, xlim, ylim}{arguments for graphical
     parameters (see \code{par}).}
   
   \item{...}{arguments passed on to function \code{plot}.}

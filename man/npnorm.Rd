@@ -26,10 +26,11 @@
 
 npnorm(v, w=1)
 rnpnorm(n, mu=0, pr=1, sd=1)
-\method{plot}{npnorm}(x, mix, beta, breaks=NULL, col="red", add=FALSE,
-                       border.col=NULL, border.lwd=1, fill="lightgrey",
-                       components=TRUE, main, lwd=2,
-                       lty=1, xlab="Data", ylab="Density", ...)
+\method{plot}{npnorm}(x, mix, beta, breaks=NULL, col="red", len=100,
+     add=FALSE, border.col=NULL, border.lwd=1,
+     fill="lightgrey", main, lwd=2, lty=1, xlab="Data",
+     ylab="Density", components=c("proportions","curves","null"),
+     lty.components=2, lwd.components=2, ...) 
 
 }
 
@@ -59,6 +60,10 @@ rnpnorm(n, mu=0, pr=1, sd=1)
   
   \item{col}{the color of the density curve to be plotted.}
   
+  \item{len}{the number of points roughly used to plot the density curve
+    over the interval of length 8 times the component standard deviation
+    around each component mean.}
+  
   \item{add}{if \code{FALSE}, creates a new plot; if \code{TRUE}, adds
     the plot to the existing one.}
   
@@ -68,8 +73,13 @@ rnpnorm(n, mu=0, pr=1, sd=1)
   
   \item{fill}{color to fill in the histogram boxes.}
 	  
-  \item{components}{if \code{TRUE}, also show the support points and
-    mixing proportions.}
+  \item{components}{if \code{proportions} (default), also show the
+    support points and mixing proportions; if \code{curves}, also
+    show the component density curves; if \code{null}, 
+    components are not shown.}
+  
+  \item{lty.components, lwd.components}{line type and width for the
+    component curves.}
   
   \item{main, lwd, lty, xlab, ylab}{arguments for graphical
     parameters (see \code{par}).}
@@ -80,7 +90,7 @@ rnpnorm(n, mu=0, pr=1, sd=1)
 
 \details{
   
-  When \code{components=TRUE}, the component means are shown on the
+  When \code{components="proportions"}, the component means are shown on the
   horizontal line of density 0. The vertical lines going upwardly at the
   support points are proportional to the mixing proportions at these
   points.
