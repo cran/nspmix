@@ -6,20 +6,7 @@
 
 # mix     Object of "disc"
 
-# rnppois = function(n=100, lambda=c(1,4), pr=c(.3,.7), mix) {
-#   if(missing(mix)) mix = disc(lambda, pr)
-#   if (n == 0) return(numeric(0))
-#   k = length(mix$pt)
-#   suppressWarnings(i <- sample.int(k, n, prob = mix$pr, replace = TRUE))
-#   x = rpois(n, mix$pt[i])
-#   w = table(x)
-#   r = list(v=as.integer(names(w)), w=as.integer(w))
-#   class(r) = "nppois"
-#   r
-# }
-
-rnppois = function(n, lambda=1, pr=1) {
-  mix = disc(lambda, pr)
+rnppois = function(n, mix=disc(1)) {
   k = length(mix$pt)
   ma = max(mix$pt)
   x = 0:round(20+ma+sqrt(ma)*15)
@@ -32,6 +19,70 @@ rnppois = function(n, lambda=1, pr=1) {
   j = w != 0
   structure(list(v=x[j], w=w[j]), class="nppois")
 }
+
+
+
+##'Class `nppois'
+##'
+##'
+##'Class \code{nppois} is used to store data that will be processed as those of
+##'a nonparametric Poisson mixture.
+##'
+##'Function \code{nppois} creates an object of class \code{nppois}, given
+##'values and weights/frequencies.
+##'
+##'Function \code{rnppois} generates a random sample from a Poisson mixture and
+##'saves the data as an object of class \code{nppois}.
+##'
+##'Function \code{plot.nppois} plots the Poisson mixture.
+##'
+##'
+##'When \code{components=TRUE}, the support points are shown on the horizontal
+##'line of density 0. The component density curves, weighted appropriately, are
+##'also shown.
+##'
+##'@aliases nppois rnppois plot.nppois
+##'@param v a numeric vector that stores the values of a sample.
+##'@param w a numeric vector that stores the corresponding weights/frequencies
+##'of the observations.
+##'@param n the sample size.
+##'@param x an object of class \code{nppois}.
+##'@param mix an object of class \code{disc}.
+##'@param beta the structural parameter, which is not really needed for the
+##'Poisson mixture.
+##'@param col the color of the density curve to be plotted.
+##'@param add if \code{FALSE}, creates a new plot; if \code{TRUE}, adds the
+##'plot to the existing one.
+##'@param components if \code{TRUE}, also show the support points and mixing
+##'proportions.
+##'@param main,lwd,lty,xlab,ylab arguments for graphical parameters (see
+##'\code{par}).
+##'@param ... arguments passed on to function \code{plot}.
+##'@author Yong Wang <yongwang@@auckland.ac.nz>
+##'@seealso \code{\link{nnls}}, \code{\link{cnm}}, \code{\link{cnmms}},
+##'\code{\link{plot.nspmix}}.
+##'@references
+##'
+##'Wang, Y. (2007). On fast computation of the non-parametric maximum
+##'likelihood estimate of a mixing distribution. \emph{Journal of the Royal
+##'Statistical Society, Ser. B}, \bold{69}, 185-198.
+##'@keywords class function
+##'@examples
+##'
+##'mix = disc(pt=c(1,4), pr=c(0.3,0.7))
+##'x = rnppois(200, mix)
+##'plot(x, mix)
+##'
+##'@usage
+##'nppois(v, w=1)
+##'rnppois(n, mix=disc(1))
+##'\method{plot}{nppois}(x, mix, beta, col="red", add=FALSE,
+##'     components=TRUE, main="nppois", lwd=1, lty=1, xlab="Data",
+##'     ylab="Density", ...)
+##' 
+##'@export nppois
+##'@export rnppois
+##'@export plot.nppois
 
 nppois = function(v, w=1) {
   if(class(v) == "nppois") {
@@ -48,7 +99,7 @@ nppois = function(v, w=1) {
 
 length.nppois = function(x) length(x$v)
 
-weights.nppois = function(x, beta) x$w
+weight.nppois = function(x, beta) x$w
 
 # lower and upper bounds on theta
 
@@ -108,7 +159,7 @@ plot.nppois = function(x, mix, beta, col="red", add=FALSE,
                       lty=1, xlab="Data", ylab="Density", ...) {
   ptr = range(mix$pt)
   if(is.null(x))
-    xlim = floor(c(pmax(ptr[1] - 4 * sqrt(ptr[1]), 0),
+    xlim = floor(c(max(ptr[1] - 4 * sqrt(ptr[1]), 0),
                    ptr[2] + 4 * sqrt(ptr[2])))
   else xlim = range(x$v)
   y = xlim[1]:xlim[2]

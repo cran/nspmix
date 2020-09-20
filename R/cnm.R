@@ -10,7 +10,9 @@ initial = function(x, beta, mix, kmax) UseMethod("initial")
 logd = function(x, beta, pt, which) UseMethod("logd")
 llex = function(x, beta, mix) UseMethod("llex")
 llexdb = function(x, beta, mix) UseMethod("llexdb")
-# Other generic functions needed: length, weights
+weight = function(x, beta) UseMethod("weight")
+
+# Other generic functions needed: length
 # print?
 
 valid.default = function(x, beta, mix) TRUE
@@ -22,6 +24,158 @@ llexdb.default = function(x, beta, mix) 0
 
 # model   = prop,    computes the mixing proportions
 #         = npmle,   computes the NPMLE
+
+
+
+##'Maximum Likelihood Estimation of a Nonparametric Mixture Model
+##'
+##'
+##'Function \code{cnm} can be used to compute the maximum likelihood estimate
+##'of a nonparametric mixing distribution (NPMLE) that has a one-dimensional
+##'mixing parameter. or simply the mixing proportions with support points held
+##'fixed.
+##'
+##'
+##'A finite mixture model has a density of the form
+##'
+##'\deqn{f(x; \pi, \theta, \beta) = \sum_{j=1}^k \pi_j f(x; \theta_j,
+##'\beta).}{f(x; pi, theta, beta) = sum_{j=1}^k pi_j f(x; theta_j, beta),}
+##'
+##'where \eqn{\pi_j \ge 0}{pi_j >= 0} and \eqn{\sum_{j=1}^k \pi_j }{sum_{j=1}^k
+##'pi_j =1}\eqn{ =1}{sum_{j=1}^k pi_j =1}.
+##'
+##'A nonparametric mixture model has a density of the form
+##'
+##'\deqn{f(x; G) = \int f(x; \theta) d G(\theta),}{f(x; G) = Integral f(x;
+##'theta) d G(theta),} where \eqn{G} is a mixing distribution that is
+##'completely unspecified. The maximum likelihood estimate of the nonparametric
+##'\eqn{G}, or the NPMLE of \eqn{G}, is known to be a discrete distribution
+##'function.
+##'
+##'Function \code{cnm} implements the CNM algorithm that is proposed in Wang
+##'(2007) and the hierarchical CNM algorithm of Wang and Taylor (2013). The
+##'implementation is generic using S3 object-oriented programming, in the sense
+##'that it works for an arbitrary family of mixture models defined by the user.
+##'The user, however, needs to supply the implementations of the following
+##'functions for their self-defined family of mixture models, as they are
+##'needed internally by function \code{cnm}:
+##'
+##'\code{initial(x, beta, mix, kmax)}
+##'
+##'\code{valid(x, beta)}
+##'
+##'\code{logd(x, beta, pt, which)}
+##'
+##'\code{gridpoints(x, beta, grid)}
+##'
+##'\code{suppspace(x, beta)}
+##'
+##'\code{length(x)}
+##'
+##'\code{print(x, ...)}
+##'
+##'\code{weight(x, ...)}
+##'
+##'While not needed by the algorithm for finding the solution, one may also
+##'implement
+##'
+##'\code{plot(x, mix, beta, ...)}
+##'
+##'so that the fitted model can be shown graphically in a user-defined way.
+##'Inside \code{cnm}, it is used when \code{plot="probability"} so that the
+##'convergence of the algorithm can be graphically monitored.
+##'
+##'For creating a new class, the user may consult the implementations of these
+##'functions for the families of mixture models included in the package, e.g.,
+##'\code{npnorm} and \code{nppois}.
+##'
+##'@param x a data object of some class that is fully defined by the user. The
+##'user needs to supply certain functions as described below.
+##'@param init list of user-provided initial values for the mixing distribution
+##'\code{mix} and the structural parameter \code{beta}.
+##'@param model the type of model that is to estimated: the non-parametric MLE
+##'(if \code{npmle}), or mixing proportions only (if \code{proportions}).
+##'@param maxit maximum number of iterations.
+##'@param tol a tolerance value needed to terminate an algorithm. Specifically,
+##'the algorithm is terminated, if the increase of the log-likelihood value
+##'after an iteration is less than \code{tol}.
+##'@param grid number of grid points that are used by the algorithm to locate
+##'all the local maxima of the gradient function. A larger number increases the
+##'chance of locating all local maxima, at the expense of an increased
+##'computational cost. The locations of the grid points are determined by the
+##'function \code{gridpoints} provided by each individual mixture family, and
+##'they do not have to be equally spaced. If needed, a \code{gridpoints}
+##'function may choose to return a different number of grid points than
+##'specified by \code{grid}.
+##'@param plot whether a plot is produced at each iteration. Useful for
+##'monitoring the convergence of the algorithm. If \code{="null"}, no plot is
+##'produced. If \code{="gradient"}, it plots the gradient curves and if
+##'\code{="probability"}, the \code{plot} function defined by the user for the
+##'class is used.
+##'@param verbose verbosity level for printing intermediate results in each
+##'iteration, including none (= 0), the log-likelihood value (= 1), the maximum
+##'gradient (= 2), the support points of the mixing distribution (= 3), the
+##'mixing proportions (= 4), and if available, the value of the structural
+##'parameter beta (= 5).
+##'@return
+##'
+##'\item{family}{the name of the mixture family that is used to fit to the
+##'data.}
+##'
+##'\item{num.iterations}{number of iterations required by the algorithm}
+##'
+##'\item{max.gradient}{maximum value of the gradient function, evaluated at the
+##'beginning of the final iteration}
+##'
+##'\item{convergence}{convergence code. \code{=0} means a success, and
+##'\code{=1} reaching the maximum number of iterations}
+##'
+##'\item{ll}{log-likelihood value at convergence}
+##'
+##'\item{mix}{MLE of the mixing distribution, being an object of the class
+##'\code{disc} for discrete distributions.}
+##'
+##'\item{beta}{value of the structural parameter, that is held fixed throughout
+##'the computation.}
+##'@author Yong Wang <yongwang@@auckland.ac.nz>
+##'@seealso \code{\link{nnls}}, \code{\link{npnorm}}, \code{\link{nppois}},
+##'\code{\link{cnmms}}.
+##'@references
+##'
+##'Wang, Y. (2007). On fast computation of the non-parametric maximum
+##'likelihood estimate of a mixing distribution. \emph{Journal of the Royal
+##'Statistical Society, Ser. B}, \bold{69}, 185-198.
+##'
+##'Wang, Y. (2010). Maximum likelihood computation for fitting semiparametric
+##'mixture models. \emph{Statistics and Computing}, \bold{20}, 75-86
+##'
+##'Wang, Y. and Taylor, S. M. (2013). Efficient computation of nonparametric
+##'survival functions via a hierarchical mixture formulation. \emph{Statistics
+##'and Computing}, \bold{23}, 713-725.
+##'@keywords function
+##'@examples
+##'
+##'## Simulated data
+##'x = rnppois(1000, disc(c(1,4), c(0.7,0.3))) # Poisson mixture
+##'(r = cnm(x))
+##'plot(r, x)
+##'
+##'x = rnpnorm(1000, disc(c(0,4), c(0.3,0.7)), sd=1) # Normal mixture
+##'plot(cnm(x), x)                        # sd = 1
+##'plot(cnm(x, init=list(beta=0.5)), x)   # sd = 0.5
+##'mix0 = disc(seq(min(x$v),max(x$v), len=100)) # over a finite grid
+##'plot(cnm(x, init=list(beta=0.5, mix=mix0), model="p"),
+##'     x, add=TRUE, col="blue")          # An approximate NPMLE
+##'
+##'## Real-world data
+##'data(thai)
+##'plot(cnm(x <- nppois(thai)), x)     # Poisson mixture
+##'
+##'data(brca)
+##'plot(cnm(x <- npnorm(brca)), x)     # Normal mixture
+##'
+##'
+##'@export cnm
 
 cnm = function(x, init=NULL, model=c("npmle","proportions"), maxit=100, tol=1e-6,
                grid=100, plot=c("null", "gradient", "probability"),
@@ -45,7 +199,7 @@ cnm = function(x, init=NULL, model=c("npmle","proportions"), maxit=100, tol=1e-6
   attr(mix, "ll") = init$ll
   convergence = 1
   gp = gridpoints(x, beta, grid)          # does not depend on beta
-  w = weights(x, beta)
+  w = weight(x, beta)
   wr = sqrt(w)
   if(maxit == 0) 
     return( structure(list(family=class(x)[1], mix=mix, beta=beta,
@@ -64,7 +218,7 @@ cnm = function(x, init=NULL, model=c("npmle","proportions"), maxit=100, tol=1e-6
     if(model == "npmle") {
       g = maxgrad(x, beta, mix, grid=gp, tol=-5)
       if(plot=="gradient") points(g$pt, g$grad, col="red", pch=20)
-      gradient = max(g$grad)
+      gmax = g$gmax
       mix = disc(c(mix$pt,g$pt), c(mix$pr,rep(0,length(g$pt))))
     }
     else {
@@ -73,7 +227,7 @@ cnm = function(x, init=NULL, model=c("npmle","proportions"), maxit=100, tol=1e-6
       ind[ind == 0] = 1
       s = split(gpt0, ind)
       imax = sapply(s, which.max)
-      gradient = max(gpt0[imax])
+      gmax = max(gpt0[imax])
       imax = imax[imax > 1]
       csum = c(0,cumsum(sapply(s, length)))
       ipt = csum[as.numeric(names(imax))] + imax
@@ -82,21 +236,20 @@ cnm = function(x, init=NULL, model=c("npmle","proportions"), maxit=100, tol=1e-6
     lpt = logd(x, beta, mix$pt, which=c(1,0,0))$ld
     D = pmin(exp(lpt - ma), 1e100)
     if(verbose > 0) 
-      print.snpmle(verbose, attr(mix, "ll")[1], mix1, beta, gradient, i-1)
+      print.snpmle(verbose, attr(mix1, "ll")[1], mix1, beta, gmax, i-1)
     r = hcnm(D, mix$pr, w=w, maxit=3)
     mix$pr = r$pf
     # attr(mix, "ll") = r$ll + sum(w * ma)
     mix = collapse.snpmle(mix, beta, x, tol=0)
-    if( attr(mix, "ll")[1] <= attr(mix1, "ll")[1] + tol ) {convergence = 0; break}
+    if( attr(mix, "ll")[1] <= attr(mix1, "ll")[1] + tol )
+      {convergence = 0; break}
   }
-  if(verbose > 0)
-    print.snpmle(verbose, attr(mix, "ll")[1], mix, beta, gradient, i)
   if(model == "npmle")
     mix = collapse.snpmle(mix, beta, x,
                           tol=max(tol*.1, abs(attr(mix, "ll")[1])*1e-16))
   ll = attr(mix,"ll")[1]
   attr(mix,"ll") = NULL
-  structure(list(family=class(x)[1], num.iterations=i, max.gradient=gradient,
+  structure(list(family=class(x)[1], num.iterations=i, max.gradient=gmax,
                  convergence=convergence, ll=ll, mix=mix, beta=beta),
             class="nspmix")
 }
@@ -221,6 +374,188 @@ hcnm = function(D, p0, w=1, maxit=3, tol=1e-6,
 
 # Modifying the support set
 
+
+
+##'Maximum Likelihood Estimation of a Semiparametric Mixture Model
+##'
+##'
+##'Functions \code{cnmms}, \code{cnmpl} and \code{cnmap} can be used to compute
+##'the maximum likelihood estimate of a semiparametric mixture model that has a
+##'one-dimensional mixing parameter. The types of mixture models that can be
+##'computed include finite, nonparametric and semiparametric ones.
+##'
+##'Function \code{cnmms} can also be used to compute the maximum likelihood
+##'estimate of a finite or nonparametric mixture model.
+##'
+##'A finite mixture model has a density of the form
+##'
+##'\deqn{f(x; \pi, \theta, \beta) = \sum_{j=1}^k \pi_j f(x; \theta_j,
+##'\beta).}{f(x; pi, theta, beta) = sum_{j=1}^k pi_j f(x; theta_j, beta),}
+##'
+##'where \eqn{pi_j \ge 0}{pi_j >= 0} and \eqn{\sum_{j=1}^k pi_j }{sum_{j=1}^k
+##'pi_j =1}\eqn{ =1}{sum_{j=1}^k pi_j =1}.
+##'
+##'A nonparametric mixture model has a density of the form
+##'
+##'\deqn{f(x; G) = \int f(x; \theta) d G(\theta),}{f(x; G) = Integral f(x;
+##'theta) d G(theta),} where \eqn{G} is a mixing distribution that is
+##'completely unspecified. The maximum likelihood estimate of the nonparametric
+##'\eqn{G}, or the NPMLE of $\eqn{G}, is known to be a discrete distribution
+##'function.
+##'
+##'A semiparametric mixture model has a density of the form
+##'
+##'\deqn{f(x; G, \beta) = \int f(x; \theta, \beta) d G(\theta),}{f(x; G, beta)
+##'= Int f(x; theta, beta) d G(theta),}
+##'
+##'where \eqn{G} is a mixing distribution that is completely unspecified and
+##'\eqn{\beta}{beta} is the structural parameter.
+##'
+##'Of the three functions, \code{cnmms} is recommended for most problems; see
+##'Wang (2010).
+##'
+##'Functions \code{cnmms}, \code{cnmpl} and \code{cnmap} implement the
+##'algorithms CNM-MS, CNM-PL and CNM-AP that are described in Wang (2010).
+##'Their implementations are generic using S3 object-oriented programming, in
+##'the sense that they can work for an arbitrary family of mixture models that
+##'is defined by the user. The user, however, needs to supply the
+##'implementations of the following functions for their self-defined family of
+##'mixture models, as they are needed internally by the functions above:
+##'
+##'\code{initial(x, beta, mix, kmax)}
+##'
+##'\code{valid(x, beta)}
+##'
+##'\code{logd(x, beta, pt, which)}
+##'
+##'\code{gridpoints(x, beta, grid)}
+##'
+##'\code{suppspace(x, beta)}
+##'
+##'\code{length(x)}
+##'
+##'\code{print(x, ...)}
+##'
+##'\code{weight(x, ...)}
+##'
+##'While not needed by the algorithms, one may also implement
+##'
+##'\code{plot(x, mix, beta, ...)}
+##'
+##'so that the fitted model can be shown graphically in a way that the user
+##'desires.
+##'
+##'For creating a new class, the user may consult the implementations of these
+##'functions for the families of mixture models included in the package, e.g.,
+##'\code{cvp} and \code{mlogit}.
+##'
+##'@aliases cnmms cnmpl cnmap
+##'@param x a data object of some class that can be defined fully by the user
+##'@param init list of user-provided initial values for the mixing distribution
+##'\code{mix} and the structural parameter \code{beta}
+##'@param model the type of model that is to estimated: non-parametric MLE
+##'(\code{npmle}) or semi-parametric MLE (\code{spmle}).
+##'@param maxit maximum number of iterations
+##'@param tol a tolerance value that is used to terminate an algorithm.
+##'Specifically, the algorithm is terminated, if the relative increase of the
+##'log-likelihood value after an iteration is less than \code{tol}. If an
+##'algorithm converges rapidly enough, then \code{-log10(tol)} is roughly the
+##'number of accurate digits in log-likelihood.
+##'@param tol.npmle a tolerance value that is used to terminate the computing
+##'of the NPMLE internally.
+##'@param grid number of grid points that are used by the algorithm to locate
+##'all the local maxima of the gradient function. A larger number increases the
+##'chance of locating all local maxima, at the expense of an increased
+##'computational cost. The locations of the grid points are determined by the
+##'function \code{gridpoints} provided by each individual mixture family, and
+##'they do not have to be equally spaced. If needed, an individual
+##'\code{gridpoints} function may return a different number of grid points than
+##'specified by \code{grid}.
+##'@param kmax upper bound on the number of support points. This is
+##'particularly useful for fitting a finite mixture model.
+##'@param plot whether a plot is produced at each iteration. Useful for
+##'monitoring the convergence of the algorithm. If \code{null}, no plot is
+##'produced. If \code{gradient}, it plots the gradient curves and if
+##'\code{probability}, the \code{plot} function defined by the user of the
+##'class is used.
+##'@param verbose verbosity level for printing intermediate results in each
+##'iteration, including none (= 0), the log-likelihood value (= 1), the maximum
+##'gradient (= 2), the support points of the mixing distribution (= 3), the
+##'mixing proportions (= 4), and if available, the value of the structural
+##'parameter beta (= 5).
+##'@return
+##'
+##'\item{family}{the class of the mixture family that is used to fit to the
+##'data.}
+##'
+##'\item{num.iterations}{Number of iterations required by the algorithm}
+##'
+##'\item{grad}{For \code{cnmms}, it contains the values of the gradient
+##'function at the support points and the first derivatives of the
+##'log-likelihood with respect to theta and beta. For \code{cnmpl}, it contains
+##'only the first derivatives of the log-likelihood with respect to beta. For
+##'\code{cnmap}, it contains only the gradient of \code{beta}.}
+##'
+##'\item{max.gradient}{Maximum value of the gradient function, evaluated at the
+##'beginning of the final iteration. It is only given by function
+##'\code{cnmap}.}
+##'
+##'\item{convergence}{convergence code. \code{=0} means a success, and
+##'\code{=1} reaching the maximum number of iterations}
+##'
+##'\item{ll}{log-likelihood value at convergence}
+##'
+##'\item{mix}{MLE of the mixing distribution, being an object of the class
+##'\code{disc} for discrete distributions}
+##'
+##'\item{beta}{MLE of the structural parameter}
+##'@author Yong Wang <yongwang@@auckland.ac.nz>
+##'@seealso \code{\link{nnls}}, \code{\link{cnm}}, \code{\link{cvp}},
+##'\code{\link{cvps}}, \code{\link{mlogit}}.
+##'@references
+##'
+##'Wang, Y. (2007). On fast computation of the non-parametric maximum
+##'likelihood estimate of a mixing distribution. \emph{Journal of the Royal
+##'Statistical Society, Ser. B}, \bold{69}, 185-198.
+##'
+##'Wang, Y. (2010). Maximum likelihood computation for fitting semiparametric
+##'mixture models. \emph{Statistics and Computing}, \bold{20}, 75-86
+##'@keywords function
+##'@examples
+##'
+##'## Compute the MLE of a finite mixture
+##'x = rnpnorm(100, disc(c(0,4), c(0.7,0.3)), sd=1)
+##'for(k in 1:6) plot(cnmms(x, kmax=k), x, add=(k>1), comp="null", col=k+1,
+##'                   main="Finite Normal Mixtures")
+##'legend("topright", 0.3, leg=paste0("k = ",1:6), lty=1, lwd=2, col=2:7)
+##'
+##'## Compute a semiparametric MLE
+##'# Common variance problem 
+##'x = rcvps(k=50, ni=5:10, mu=c(0,4), pr=c(0.7,0.3), sd=3)
+##'cnmms(x)              # CNM-MS algorithm
+##'cnmpl(x)              # CNM-PL algorithm
+##'cnmap(x)              # CNM-AP algorithm
+##'
+##'# Logistic regression with a random intercept
+##'x = rmlogit(k=30, gi=3:5, ni=6:10, pt=c(0,4), pr=c(0.7,0.3),
+##'            beta=c(0,3))
+##'cnmms(x)
+##'
+##'data(toxo)            # k = 136
+##'cnmms(mlogit(toxo))
+##'
+##'@usage
+##'cnmms(x, init=NULL, maxit=1000, model=c("spmle","npmle"), tol=1e-6,
+##'      grid=100, kmax=Inf, plot=c("null", "gradient", "probability"),
+##'      verbose=0)
+##'cnmpl(x, init=NULL, tol=1e-6, tol.npmle=tol*1e-4, grid=100, maxit=1000,
+##'      plot=c("null", "gradient", "probability"), verbose=0)
+##'cnmap(x, init=NULL, maxit=1000, tol=1e-6, grid=100, plot=c("null",
+##'      "gradient"), verbose=0)
+##'@export cnmms
+##'@export cnmpl
+##'@export cnmap
+
 cnmms = function(x, init=NULL, maxit=1000,
       model=c("spmle","npmle"), tol=1e-6, grid=100, kmax=Inf,
       plot=c("null", "gradient", "probability"), verbose=0) {
@@ -229,7 +564,7 @@ cnmms = function(x, init=NULL, maxit=1000,
   model = match.arg(model)
   init = initial.snpmle(x, init, kmax=kmax)
   beta = init$beta
-  if(is.null(beta) || is.na(beta)) model = "npmle"
+  if(is.null(beta) || any(is.na(beta))) model = "npmle"
   nb = length(beta)
   mix = init$mix
   attr(mix, "ll") = init$ll
@@ -250,20 +585,17 @@ cnmms = function(x, init=NULL, maxit=1000,
     if(length(mix$pt) < kmax) {
       gp = gridpoints(x, beta, grid)
       g = maxgrad(x, beta, mix, grid=gp, tol=-Inf)
-      gradient = max(g$grad)
+      gmax = g$gmax
       kpt = min(kmax - length(mix$pt), length(g$pt))
       jpt = order(g$grad, decreasing=TRUE)
       mix = disc(c(mix$pt,g$pt[jpt][1:kpt]), c(mix$pr,rep(0,kpt)))
       if(plot=="gradient") points(g$pt, g$grad, col="red", pch=20)
     }
     if(verbose > 0)
-      print.snpmle(verbose, attr(mix1, "ll")[1], mix1, beta, gradient, i-1)
+      print.snpmle(verbose, attr(mix1, "ll")[1], mix1, beta, gmax, i-1)
     lpt = logd(x, beta, mix$pt, which=c(1,0,0))$ld
-    ## ll1 = attr(mix1, "ll")
-    ## logd.mix1 = log(attr(ll1,"dmix")) + attr(ll1,"ma")
-    ## S = pmin(exp(lpt - logd.mix1), 1e100)
     S = pmin(exp(lpt - attr(attr(mix1,"ll"),"logd")), 1e100)
-    w = weights(x, beta)
+    w = weight(x, beta)
     wr = sqrt(w)
     grad.support = colSums(w * (S - 1))
     r = pnnls(wr * S, wr * 2, sum=1)
@@ -271,22 +603,21 @@ cnmms = function(x, init=NULL, maxit=1000,
     r = lsch(mix, beta, disc(mix$pt,sol), beta, x, which=c(1,0,0))
     mix = r$mix
     attr(mix, "ll") = logLik.snpmle(x, beta, mix)
-    mix = collapse.snpmle(mix, beta, x)
+    mix = collapse.snpmle(mix, beta, x, tol=0)
     if(max(grad.support) < 1e10) {    # 1e20
       r = switch(model,
         spmle = bfgs(mix, beta, x, which=c(1,1,1)),
         npmle = bfgs(mix, beta, x, which=c(1,1,0))   )
       beta = r$beta
-      mix = collapse.snpmle(r$mix, beta, x)
+      mix = collapse.snpmle(r$mix, beta, x, tol=0)
     }
     switch(plot,
            "gradient" = plotgrad(x, mix, beta, pch=1),
            "probability" = plot(x, mix, beta) )
     if(attr(mix,"ll")[1] <= attr(mix1,"ll")[1] + tol) {convergence = 0; break}
   }
-  if(verbose > 0)
-    print.snpmle(verbose, attr(mix,"ll")[1], mix, beta, gradient, i)
-  mix = collapse.snpmle(mix, beta, x, tol=tol) # , tol=1e-12)
+  mix = collapse.snpmle(mix, beta, x,
+                        tol=max(tol*.1, abs(attr(mix, "ll")[1])*1e-16))
   m = length(mix$pt)
   if(m < length(r$mix$pt)) {
     d = dll.snpmle(x, mix, beta, which=c(0,1,1,1))
@@ -295,7 +626,7 @@ cnmms = function(x, init=NULL, maxit=1000,
            if(is.null(d$db)) NULL else paste0("beta",1:length(beta)) )
   }
   else grad = r$grad
-  grad[1:m] = grad[1:m] - sum(rep(weights(x, beta), len=length(x)))
+  grad[1:m] = grad[1:m] - sum(rep(weight(x, beta), len=length(x)))
   ll = attr(mix,"ll")[1]
   attr(mix,"ll") = NULL
   structure(list(family=class(x)[1], num.iterations=i, grad=grad,
@@ -314,8 +645,8 @@ cnmpl = function(x, init=NULL, tol=1e-6,
   beta = init$beta
   mix = init$mix
   nb = length(beta)
-  if(is.null(beta) || is.na(beta))
-    stop("No initial value for beta. Use cnm() for NPMLE problems.")
+  if(is.null(beta) || any(is.na(beta)))
+    stop("No proper initial value for beta. Use cnm() for NPMLE problems.")
   switch(plot,
          "gradient" = plotgrad(x, mix, beta, pch=1),
          "probability" = plot(x, mix, beta) )
@@ -372,7 +703,7 @@ cnmap = function(x, init=NULL, maxit=1000, tol=1e-6, grid=100,
   k = length(x)
   init = initial.snpmle(x, init)
   beta = init$beta
-  if(is.null(beta) || is.na(beta))
+  if(is.null(beta) || any(is.na(beta)))
     stop("No initial value for beta. Use cnm() for NPMLE problems.")
   nb = length(beta)
   mix = init$mix
@@ -383,36 +714,37 @@ cnmap = function(x, init=NULL, maxit=1000, tol=1e-6, grid=100,
     switch(plot, "gradient" = plotgrad(x, mix, beta) )
     gp = gridpoints(x, beta, grid)
     g = maxgrad(x, beta, mix, grid=gp, tol=-Inf)
-    gradient = max(g$grad)
+    gmax = g$gmax
     if(verbose > 0)
-      print.snpmle(verbose, attr(mix, "ll")[1], mix, beta, gradient, i-1)
+      print.snpmle(verbose, attr(mix, "ll")[1], mix, beta, gmax, i-1)
     mix = disc(c(mix$pt,g$pt), c(mix$pr,rep(0,length(g$pt))))
     lpt = logd(x, beta, mix$pt, which=c(1,0,0))$ld
     ## ll1 = attr(mix1, "ll")
     # logd.mix1 = log(attr(ll1,"dmix")) + attr(ll1,"ma")
     ## S = pmin(exp(lpt - logd.mix1), 1e100)
     S = pmin(exp(lpt - attr(attr(mix1,"ll"),"logd")), 1e100)
-    wr = sqrt(weights(x, beta))
+    wr = sqrt(weight(x, beta))
     r = pnnls(wr * S, wr * 2, sum=1)
     sol = r$x / sum(r$x)
     r = lsch(mix, beta, disc(mix$pt,sol), beta, x, which=c(1,0,0))
-    mix = collapse.snpmle(r$mix, beta, x)
+    mix = collapse.snpmle(r$mix, beta, x, tol=0)
     r = bfgs(mix, beta, x, which=c(0,0,1))
     beta = r$beta
-    mix = collapse.snpmle(r$mix, beta, x)
+    mix = collapse.snpmle(r$mix, beta, x, tol=0)
     if( attr(mix, "ll")[1] <= attr(mix1, "ll")[1] + tol ) {convergence = 0; break} 
   }
-  mix = collapse.snpmle(mix, beta, x, tol=tol) # , tol=1e-12)
+  mix = collapse.snpmle(mix, beta, x,
+                        tol=max(tol*.1, abs(attr(mix, "ll")[1])*1e-16))
   m = length(mix$pt)
   d = dll.snpmle(x, mix, beta, which=c(0,1,1,1))
   grad = c(d$dp, d$dt, d$db)
   names(grad) = c(paste0("pr",1:m), paste0("pt",1:m), 
                   if(is.null(d$db)) NULL else paste0("beta",1:length(beta)) )
-  grad[1:m] = grad[1:m] - sum(rep(weights(x, beta), len=length(x)))
+  grad[1:m] = grad[1:m] - sum(rep(weight(x, beta), len=length(x)))
   ll = attr(mix,"ll")[1]
   attr(mix,"ll") = NULL
   structure(list(family=class(x)[1], num.iterations=i, grad=grad,
-                 max.gradient=gradient, convergence=convergence,
+                 max.gradient=gmax, convergence=convergence,
                  ll=ll, mix=r$mix, beta=r$beta),
             class="nspmix")
 }
@@ -433,7 +765,7 @@ bfgs = function(mix, beta, x, tol=1e-15, maxit=1000, which=c(1,1,1), D=NULL) {
   k3 = if(which[3]) length(beta) else 0
   if( sum(which) == 0 ) stop("No parameter specified for updating in bfgs()")
   dl = dll.snpmle(x, mix, beta, which=c(1,which), ind=TRUE)
-  w = weights(x, beta)
+  w = weight(x, beta)
   ll = llex(x, beta, mix) + sum(w * dl$ll)
   grad = c(if(which[1]) colSums(w * dl$dp) else NULL,
     if(which[2]) colSums(w * dl$dt) else NULL,
@@ -540,7 +872,6 @@ bfgs = function(mix, beta, x, tol=1e-15, maxit=1000, which=c(1,1,1), D=NULL) {
     }
   }
   r$num.iterations = i
-  # print(-diag(D))
   r
 }
 
@@ -745,7 +1076,7 @@ logLik.snpmle = function(x, beta, mix) {
   ma = matMaxs(ld)
   dmix = drop(exp(ld - ma) %*% mix$pr) + 1e-100
   logd = log(dmix) + ma
-  ll = llex(x, beta, mix) + sum( weights(x, beta) * logd )
+  ll = llex(x, beta, mix) + sum( weight(x, beta) * logd )
   attr(ll, "dmix") = dmix
   attr(ll, "logd") = logd    # log(mixture density)
   ll
@@ -766,7 +1097,7 @@ pll = function(beta, mix0, x, tol=1e-15, grid=100, ...) {
   ma = matMaxs(lpt)
   dmix = drop(exp(lpt - ma) %*% mix$pr) + 1e-100
   D = pmin(exp(lpt - ma), 1e100)
-  p = weights(x, beta) * D/dmix * rep(mix$pr, rep(nrow(D), length(mix$pr)))
+  p = weight(x, beta) * D/dmix * rep(mix$pr, rep(nrow(D), length(mix$pr)))
   db = apply(sweep(dl$db, c(1,2), p, "*"), c(1,3), sum)
   g = llexdb(x,beta,mix) + colSums(db)
   list(ll=r$ll, beta=r$beta, mix=mix, grad=g, max.gradient=r$max.gradient,
@@ -774,7 +1105,7 @@ pll = function(beta, mix0, x, tol=1e-15, grid=100, ...) {
 }
 
 ## Compute all local maxima of the gradient function using a hybrid
-## secant-bisection method. It does not need the second derivative of the
+## secant-bisection method. No need for the second derivative of the
 ## gradient function.
 
 ## O(n*m) + #iteration * O(n*mhat)
@@ -791,7 +1122,8 @@ maxgrad = function(x, beta, mix, grid=100, tol=-Inf, maxit=100) {
   dg = dg[!j]
   np = length(grid)
   jmax = which(dg[-np] > 0 & dg[-1] < 0)
-  if( length(jmax) < 1 ) return
+  if( length(jmax) < 1 )
+    return( list(pt=NULL, grad=NULL, num.iterations=0, gmax=NULL) )
   left = grid[jmax]
   right = grid[jmax+1]
   pt = (left + right) * .5
@@ -819,20 +1151,19 @@ maxgrad = function(x, beta, mix, grid=100, tol=-Inf, maxit=100) {
   if(dg[1] <= 0) pt = c(grid[1], pt)
   if(length(pt) == 0) stop("no new support point found") # should never happen
   g = grad(pt, x, beta, mix, order=0)$d0
+  gmax = max(g)
   names(pt) = names(g) = NULL
   j = g >= tol
-  list(pt=pt[j], grad=g[j], num.iterations=i)
+  list(pt=pt[j], grad=g[j], num.iterations=i, gmax=gmax)
 }
 
 # gradient function, with O(n*m)
 
 grad = function(pt, x, beta, mix, order=0) {
-  w = weights(x, beta)
+  w = weight(x, beta)
   if(length(w) != length(x)) w = rep(w, length=length(x))
   if(is.null(attr(mix, "ll")) || is.null(attr(attr(mix, "ll"), "dmix")))
     attr(mix, "ll") = logLik.snpmle(x, beta, mix)
-  ## dmix = attr(attr(mix, "ll"), "dmix")
-  ## ma = attr(attr(mix, "ll"), "ma")
   logd.mix = attr(attr(mix, "ll"), "logd")
   g = vector("list", length(order))
   names(g) = paste0("d", order)
@@ -845,6 +1176,61 @@ grad = function(pt, x, beta, mix, order=0) {
   g
 }
 
+
+
+##'Plot the Gradient Function
+##'
+##'
+##'Function \code{plotgrad} plots the gradient function or its first derivative
+##'of a nonparametric mixture.
+##'
+##'
+##'\code{data} must belong to a mixture family, as specified by its class.
+##'
+##'The support points are shown on the horizontal line of gradient 0. The
+##'vertical lines going downwards at the support points are proportional to the
+##'mixing proportions at these points.
+##'
+##'@param x a data object of a mixture model class.
+##'@param mix an object of class 'disc', for a discrete mixing distribution.
+##'@param beta the structural parameter.
+##'@param len number of points used to plot the smooth curve.
+##'@param order the order of the derivative of the gradient function to be
+##'plotted. If 0, it is the gradient function itself.
+##'@param col color for the curve.
+##'@param col2 color for the support points.
+##'@param add if \code{FALSE}, create a new plot; if \code{TRUE}, add the curve
+##'and points to the current one.
+##'@param main,xlab,ylab,cex,pch,lwd,xlim,ylim arguments for graphical
+##'parameters (see \code{par}).
+##'@param ... arguments passed on to function \code{plot}.
+##'@author Yong Wang <yongwang@@auckland.ac.nz>
+##'@seealso \code{\link{plot.nspmix}}, \code{\link{nnls}}, \code{\link{cnm}},
+##'\code{\link{cnmms}}, \code{\link{npnorm}}, \code{\link{nppois}}.
+##'@references
+##'
+##'Wang, Y. (2007). On fast computation of the non-parametric maximum
+##'likelihood estimate of a mixing distribution. \emph{Journal of the Royal
+##'Statistical Society, Ser. B}, \bold{69}, 185-198.
+##'
+##'Wang, Y. (2010). Maximum likelihood computation for fitting semiparametric
+##'mixture models. \emph{Statistics and Computing}, \bold{20}, 75-86
+##'@keywords function
+##'@examples
+##'
+##'## Poisson mixture
+##'x = rnppois(200, disc(c(1,4), c(0.7,0.3)))
+##'r = cnm(x)
+##'plotgrad(x, r$mix)
+##'
+##'## Normal mixture
+##'x = rnpnorm(200, disc(c(0,4), c(0.3,0.7)), sd=1)
+##'r = cnm(x, init=list(beta=0.5))   # sd = 0.5
+##'plotgrad(x, r$mix, r$beta)
+##'
+##'
+##'@export plotgrad
+
 plotgrad = function(x, mix, beta, len=500, order=0, col="blue",
                     col2="red", add=FALSE,
                     main=paste0("Class: ",class(x)),
@@ -852,7 +1238,7 @@ plotgrad = function(x, mix, beta, len=500, order=0, col="blue",
                     ylab=paste0("Gradient (order = ",order,")"), cex=1,
                     pch=1, lwd=1, xlim, ylim, ...) {
   if(order > 1) stop("order > 1")
-  if( missing(xlim) ) xlim = range(gridpoints(x, beta, grid=2))
+  if( missing(xlim) ) xlim = range(gridpoints(x, beta, grid=5))
   pt = seq(xlim[1], xlim[2], len=len)
   if(class(mix) == "disc") pt = sort(c(mix$pt, pt))
   g = grad(pt, x, beta, mix, order=order)[[1]]
@@ -890,13 +1276,13 @@ initial.snpmle = function(x, init=NULL, kmax=NULL) {
 # which     A 4-vector having values either 0 and 1, indicating which
 #           derivatives to be computed, in the order of pi, theta and beta
 # ind       = TRUE, return the derivatives with respect to individual
-#                   observations (with weights)
+#                   observations (with weight)
 #           = FALSE, return the derivatives
 #
 # OUTPUT:   a list with ll, dp, dt, db, as specified by which
 
 dll.snpmle = function(x, mix, beta, which=c(1,0,0,0), ind=FALSE) {
-  w = weights(x, beta)
+  w = weight(x, beta)
   r = list()
   dl = logd(x, beta, mix$pt, which=c(1,which[4:3]))
   lpt = dl$ld
@@ -953,7 +1339,7 @@ collapse.snpmle = function(mix, beta, x, tol=1e-15) {
 ##   }
   
 ##   p = attr(attr(mix, "ll"), "p")
-##   pj = colSums(weights(x, beta) * p)
+##   pj = colSums(weight(x, beta) * p)
 ##   if( any(pj == 0) ) {
 ##     j = pj != 0
 ##     mix$pt = mix$pt[j]
@@ -1000,83 +1386,5 @@ plot.nspmix = function(x, data, type=c("probability","gradient"), ...) {
          "probability" = plotf(data, x$mix, x$beta, ...),
          "gradient" = plotgrad(data, x$mix, x$beta, pch=1, ...) )
   invisible(x)
-}
-
-### old functions
-
-# gradient function
-
-OLD.grad = function(pt, x, beta, dmix, ma, order=0) {
-  w = weights(x, beta)
-  if(length(w) != length(x)) w = rep(w, length=length(x))
-  if(class(dmix) == "disc") {
-    l = logd(x, beta, dmix$pt, which=c(1,0,0))$ld
-    ma = matMaxs(l)
-    dmix = drop(exp(l - ma) %*% dmix$pr) + 1e-100
-  }
-  g = vector("list", length(order))
-  names(g) = paste0("d", order)
-  which = c(1,0,0)
-  if(any(order >= 1)) which[3:max(order+2)] = 1
-  dl = logd(x, beta, pt, which=which)
-  ws = w * pmin(exp(dl$ld - ma), 1e100) / dmix
-  if(0 %in% order) g$d0 = colSums(ws) - sum(w)
-  if(1 %in% order) g$d1 = colSums(ws * dl$dt)
-  g
-}
-
-NEW.maxgrad = function(x, beta, mix, grid=100, tol=-Inf, maxit=100) {
-  if( length(grid) == 1 ) grid = gridpoints(x, beta, grid)
-  dg = grad(grid, x, beta, mix, order=1)$d1
-  j = is.na(dg)
-  grid = grid[!j]
-  tol.pt = 1e-14 * diff(range(grid))
-  dg = dg[!j]
-  np = length(grid)
-  jmax = which(dg[-np] > 0 & dg[-1] < 0)
-  if( length(jmax) < 1 ) return
-  left = grid[jmax]
-  right = grid[jmax+1]
-  pta = pt = (left + right) * .5
-  if(length(pt) != 0) {
-    pt.old = left
-    d1.old = dg[jmax]
-    d2 = rep(-1, length(pt))
-    ju = 1:length(pt)            # indexes for unsolved points
-    for(i in 1:maxit) {
-      d1 = grad(pt, x, beta, mix, order=1)$d1
-      d2t = (d1 - d1.old) / (pt - pt.old)
-      jd = !is.na(d2t) & d2t < 0
-      d2[jd] = d2t[jd]
-      left[d1>0] = pt[d1>0]
-      right[d1<0] = pt[d1<0]
-      pt.old = pt
-      d1.old = d1
-      pt = pt - d1 / d2
-      j = is.na(pt) | pt < left | pt > right     # those out of brackets
-      pt[j] = (left[j] + right[j]) * .5
-      jj = abs(pt - pt.old) > tol.pt             # unsolved cases
-      sjj = sum(jj)
-      if(any(!jj)) pta[ju[!jj]] = pt[!jj]        # cases solved
-      if(sjj == 0) break
-      if(sjj < length(pt)) {
-        pt = pt[jj]
-        pt.old = pt.old[jj]
-        d1.old = d1.old[jj]
-        d2 = d2[jj]
-        left = left[jj]
-        right = right[jj]
-        ju = ju[jj]
-      }
-    }
-  }
-  else i = 0
-  if(dg[np] >= 0) pta = c(grid[np], pta)
-  if(dg[1] <= 0) pta = c(grid[1], pta)
-  if(length(pt) == 0) stop("no new support point found") # should never happen
-  g = grad(pta, x, beta, mix, order=0)$d0
-  names(pta) = names(g) = NULL
-  j = g >= tol
-  list(pt=pta[j], grad=g[j], num.iterations=i)
 }
 

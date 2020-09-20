@@ -5,7 +5,41 @@
 ## pt    Points
 ## pr    Probabilities at the points
 
-## a "disc" object must have its support points sorted in ascending order
+## a "disc" object always has its support points sorted in ascending order
+
+
+
+##'Class `disc'
+##'
+##'
+##'Class \code{disc} is used to represent an arbitrary univariate discrete
+##'distribution with a finite number of support points.
+##'
+##'Function \code{disc} creates an object of class \code{disc}, given the
+##'support points and probability values at these points.
+##'
+##'Function \code{print.disc} prints the discrete distribution.
+##'
+##'
+##'@aliases disc print.disc
+##'@param pt a numeric vector for support points.
+##'@param pr a numeric vector for probability values at the support points.
+##'@param x an object of class \code{disc}.
+##'@param ... arguments passed on to function \code{print}.
+##'@author Yong Wang <yongwang@@auckland.ac.nz>
+##'@seealso \code{\link{cnm}}, \code{\link{cnmms}}.
+##'@keywords class function
+##'@examples
+##'
+##'
+##'(d = disc(pt=c(0,4), pr=c(0.3,0.7)))
+##'
+##'@usage
+##'disc(pt, pr=1)
+##'\method{print}{disc}(x, ...)
+##' 
+##'@export disc
+##'@export print.disc
 
 disc = function(pt, pr=1) {
   if (length(pt)== 0) d = list(pt=numeric(0), pr=numeric(0))
@@ -30,10 +64,19 @@ print.disc = function (x, ...) {
   print(b, ...)
 }
 
-plot.disc = function (x, ...) {
-  ylim = c(0, max(x$pr))
-  plot(x$pt, x$pr, type="h", col="blue", lwd=2, ylim=ylim,
-       xlab="", ylab="Probability", ...)
+plot.disc = function (x, type=c("pdf","cdf"), add=FALSE, col="blue", lwd=1, ylim,
+                      xlab="", ylab="Probability", ...) {
+  type = match.arg(type)
+  if(missing(ylim)) ylim = switch(type, pdf=c(0, max(x$pr)), cdf=c(0,1))
+  type2 = switch(type, pdf="h", cdf="s")
+  x1 = switch(type, pdf=x$pt, cdf=c(x$pt[1], x$pt))
+  y1 = switch(type, pdf=x$pr, cdf=c(0,cumsum(x$pr)))
+  if(add) lines(x1, y1, type=type2, col=col, lwd=lwd, ...)
+  else {
+    plot(x1, y1, type=type2, col=col, lwd=lwd, ylim=ylim,
+         xlab=xlab, ylab=ylab, ...)
+    if(type == "cdf") abline(h=c(0,1), col="grey")
+  }
 }
 
 # Sort
