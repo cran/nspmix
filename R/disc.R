@@ -9,54 +9,89 @@
 
 
 
-##'Class `disc'
-##'
-##'
-##'Class \code{disc} is used to represent an arbitrary univariate discrete
-##'distribution with a finite number of support points.
-##'
-##'Function \code{disc} creates an object of class \code{disc}, given the
-##'support points and probability values at these points.
-##'
-##'Function \code{print.disc} prints the discrete distribution.
-##'
-##'
-##'@aliases disc print.disc
-##'@param pt a numeric vector for support points.
-##'@param pr a numeric vector for probability values at the support points.
-##'@param x an object of class \code{disc}.
-##'@param ... arguments passed on to function \code{print}.
-##'@author Yong Wang <yongwang@@auckland.ac.nz>
-##'@seealso \code{\link{cnm}}, \code{\link{cnmms}}.
-##'@keywords class function
-##'@examples
-##'
-##'
-##'(d = disc(pt=c(0,4), pr=c(0.3,0.7)))
-##'
-##'@usage
-##'disc(pt, pr=1)
-##'\method{print}{disc}(x, ...)
+##' Class \code{disc}
 ##' 
-##'@export disc
-##'@export print.disc
+##' Class \code{disc} is used to represent an arbitrary univariate
+##' discrete distribution with a finite number of support points.
+##' 
+##' Function \code{disc} creates an object of class \code{disc}, given
+##' the support points and probability values at these points.
+##' 
+##' Function \code{print.disc} prints the discrete distribution.
+##' 
+##' @param pt a numeric vector for support points.
+##' @param pr a numeric vector for probability values at the support
+##'   points.
+##' @param sort =TRUE, by default. If TRUE, support points are sorted
+##'   (in increasing order).
+##' @param collapse =TRUE, by default. If TRUE, identical support
+##'   points are collapsed, with their masses aggregated.
+##' 
+##' @author Yong Wang <yongwang@@auckland.ac.nz>
+##' 
+##' @seealso \code{\link{cnm}}, \code{\link{cnmms}}.
+##' 
+##' @examples
+##' 
+##' (d = disc(pt=c(0,4), pr=c(0.3,0.7)))
+##' 
+##' @usage
+##' 
+##' disc(pt, pr=1, sort=TRUE, collapse=FALSE)
+##'  
+##' @export
 
-disc = function(pt, pr=1) {
-  if (length(pt)== 0) d = list(pt=numeric(0), pr=numeric(0))
+disc = function(pt, pr=1, sort=TRUE, collapse=FALSE) {
+  if(collapse) sort = TRUE
+  if (length(pt) == 0) d = list(pt=numeric(0), pr=numeric(0))
   else {
     k = max(length(pt), length(pr), na.rm=TRUE)
     pt = rep(pt, len=k)
     if(length(pr) == 0) pr = 1
     pr = rep(pr, len=k)
-    o = order(pt)
-    d = list(pt=pt[o], pr=pr[o]/sum(pr))
+    if(sort) {
+      o = order(pt)
+      d = list(pt=pt[o], pr=pr[o]/sum(pr))
+    }
+    else d = list(pt=pt, pr=pr/sum(pr))
   }
-  structure(d, class="disc")
+  if(collapse) {
+    j = d$pr != 0
+    pt = d$pt[j]
+    pr = d$pr[j]
+    jd0 = which(! duplicated(pt))    # which distinct
+    jd1 <- c(jd0, length(pr)+2)
+    cumpr <- c(0,cumsum(pr),1)[jd1]
+    pr = diff(cumpr)
+    pt = pt[jd0]
+    structure(list(pt=pt, pr=pr), class="disc")
+  }
+  else structure(d, class="disc")
 }
 
-# is.null.disc = function (d) is.null(d$pt)
-
-# is.disc = function (d) any(class(d) == "disc")
+##' @title Prints a discrete distribution function
+##' 
+##' @description Class \code{disc} is used to represent an arbitrary
+##'   univariate discrete distribution with a finite number of support
+##'   points.
+##' 
+##' Function \code{disc} creates an object of class \code{disc}, given
+##'  the support points and probability values at these points.
+##' 
+##' Function \code{print.disc} prints the discrete distribution.
+##' 
+##' @param x an object of class \code{disc}.
+##' @param ... arguments passed on to function \code{print}.
+##' 
+##' @author Yong Wang <yongwang@@auckland.ac.nz>
+##' 
+##' @seealso \code{\link{cnm}}, \code{\link{cnmms}}.
+##' 
+##' @examples
+##' 
+##' (d = disc(pt=c(0,4), pr=c(0.3,0.7)))
+##'  
+##' @export
 
 print.disc = function (x, ...) {
   b = cbind(x$pt, x$pr)
@@ -64,7 +99,40 @@ print.disc = function (x, ...) {
   print(b, ...)
 }
 
-plot.disc = function (x, type=c("pdf","cdf"), add=FALSE, col="blue", lwd=1, ylim,
+
+##' @title Plot a discrete distribution function
+##' 
+##' @description Class \code{disc} is used to represent an arbitrary
+##'   univariate discrete distribution with a finite number of support
+##'   points.
+##' 
+##' Function \code{disc} creates an object of class \code{disc}, given
+##'  the support points and probability values at these points.
+##' 
+##' Function \code{plot.disc} plots the discrete distribution.
+##' 
+##' @param x an object of class \code{disc}.
+##' @param type plot its pdf or cdf.
+##' @param add add the plot or not.
+##' @param col colour to be used.
+##' @param lwd,ylim,xlab,ylab graphical parameters.
+##' @param ... arguments passed on to function \code{plot}.
+##' 
+##' @author Yong Wang <yongwang@@auckland.ac.nz>
+##' 
+##' @seealso \code{\link{disc}}, \code{\link{cnm}}, \code{\link{cnmms}}.
+##' 
+##' @examples
+##' 
+##' plot(disc(pt=c(0,4), pr=c(0.3,0.7)))
+##' plot(disc(rnorm(5), 1:5))
+##' for(i in 1:5)
+##'    plot(disc(rnorm(5), 1:5), type="cdf", add=(i>1), xlim=c(-3,3))
+##' 
+##' @export
+
+plot.disc = function (x, type=c("pdf","cdf"), add=FALSE, col=4, lwd=1,
+                      ylim,
                       xlab="", ylab="Probability", ...) {
   type = match.arg(type)
   if(missing(ylim)) ylim = switch(type, pdf=c(0, max(x$pr)), cdf=c(0,1))
@@ -79,25 +147,15 @@ plot.disc = function (x, type=c("pdf","cdf"), add=FALSE, col="blue", lwd=1, ylim
   }
 }
 
-# Sort
+##' @export
 
-## sort.disc = function(x) {
-##   if( is.null(x$pt) ) return(x)
-##   o = order(x$pt)
-##   x$pt = x$pt[o]
-##   x$pr = x$pr[o]
-##   x
-## }
-
-# is.unsorted.disc = function(d) is.unsorted(d$pt)
-
-# var.disc = function(d) {
-#   if(length(d$pt) <= 1) 0
-#   else {
-#     mu = sum(d$pr * d$pt)
-#     sum( d$pr * (d$pt - mu)^2 )
-#   }
-# }
+sort.disc = function(x, decreasing=FALSE, ...) {
+  if( is.null(x$pt) ) return(x)
+  o = order(x$pt, decreasing=decreasing)
+  x$pt = x$pt[o]
+  x$pr = x$pr[o]
+  x
+}
 
 ## unique: remove support points with zero mass and collapse similar support
 ## points
@@ -106,7 +164,9 @@ plot.disc = function (x, type=c("pdf","cdf"), add=FALSE, col="blue", lwd=1, ylim
 
 ## Detail: Find similar pairs and collapse them
 
-unique.disc = function(x, prec=0) {
+##' @export 
+
+unique.disc = function(x, incomparables=FALSE, prec=0, ...) {
   if( length(x$pt) == 1 ) return(x)
   prec = rep(prec, len=2)
   j0  = x$pr <= prec[2]
@@ -128,28 +188,5 @@ unique.disc = function(x, prec=0) {
   disc(pt=pt, pr=pr)
 }
 
-
-## OLD.unique.disc = function(x, prec=0) {
-##   if( length(x$pt) == 1 ) return(x)
-## #   x = sort.disc(x)
-##   prec = rep(prec, len=2)
-##   ## if ( all(prec < 0) ) return(x)
-##   pt2 = pt = x$pt
-##   pr2 = pr = x$pr
-##   j  = pr <= prec[2]
-##   pt = pt[!j]
-##   pr = pr[!j]
-##   index = 0
-##   repeat {
-##     if( length(pt) == 0 ) break
-##     j = abs(pt[1] - pt) <=  prec[1]
-##     index = index + 1
-##     pt2[index] = weighted.mean(pt[j], pr[j])
-##     pr2[index] = sum( pr[j] )
-##     pt = pt[!j]
-##     pr = pr[!j]
-##   }
-##   disc(pt=pt2[1:index], pr=pr2[1:index])
-## }
 
 

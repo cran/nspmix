@@ -16,93 +16,82 @@ rnpnorm = function(n, mix=disc(0), sd=1) {
   structure(x, class= "npnorm")
 }
 
-
-
-##'Class `npnorm'
-##'
-##'
-##' Class \code{npnorm} can be used to store data that will be
-##' processed as those of a nonparametric normal mixture. There are
-##' several functions associated with the class.
-##'
-##' Function \code{npnorm} creates an object of class \code{npnorm},
-##' given values and weights/frequencies.
-##'
-##' Function \code{rnpnorm} generates a random sample from a normal
-##' mixture and saves the data as an object of class \code{npnorm}.
-##'
-##' Function \code{plot.npnorm} plots the normal mixture.
-##'
-##'
-##' When \code{components="proportions"}, the component means are
-##' shown on the horizontal line of density 0. The vertical lines
-##' going upwardly at the support points are proportional to the
-##' mixing proportions at these points.
-##'
-##'@aliases npnorm rnpnorm plot.npnorm
-##'@param v a numeric vector that stores the values of a sample.
-##'@param w a numeric vector that stores the corresponding weights/frequencies
-##'of the observations.
-##'@param n the sample size.
-##'@param mix an object of class \code{disc}, for a discrete distribution.
-##'@param beta the structural parameter.
-##'@param sd a scalar for the component standard deviation that is common to
-##'all components.
-##'@param x an object of class \code{npnorm}.
-##'@param breaks the rough number bins used for plotting the histogram.
-##'@param col the color of the density curve to be plotted.
-##'@param len the number of points roughly used to plot the density curve over
-##'the interval of length 8 times the component standard deviation around each
-##'component mean.
-##'@param add if \code{FALSE}, creates a new plot; if \code{TRUE}, adds the
-##'plot to the existing one.
-##'@param border.col color for the border of histogram boxes.
-##'@param border.lwd line width for the border of histogram boxes.
-##'@param fill color to fill in the histogram boxes.
-##'@param components if \code{proportions} (default), also show the support
-##'points and mixing proportions; if \code{curves}, also show the component
-##'density curves; if \code{null}, components are not shown.
-##'@param lty.components,lwd.components line type and width for the component
-##'curves.
-##'@param main,lwd,lty,xlab,ylab arguments for graphical parameters (see
-##'\code{par}).
-##'@param ... arguments passed on to function \code{plot}.
-##'@author Yong Wang <yongwang@@auckland.ac.nz>
-##'@seealso \code{\link{nnls}}, \code{\link{cnm}}, \code{\link{cnmms}},
-##'\code{\link{plot.nspmix}}.
-##'@references
-##'
-##'Wang, Y. (2007). On fast computation of the non-parametric maximum
-##'likelihood estimate of a mixing distribution. \emph{Journal of the Royal
-##'Statistical Society, Ser. B}, \bold{69}, 185-198.
-##'@keywords class function
-##'@examples
-##'
-##'mix = disc(pt=c(0,4), pr=c(0.3,0.7))  # a discrete distribution
-##'x = rnpnorm(200, mix, sd=1)
-##'plot(x, mix, beta=1)
-##'
-##'@usage
-##'npnorm(v, w=1)
-##'rnpnorm(n, mix=disc(0), sd=1)
-##'\method{plot}{npnorm}(x, mix, beta, breaks=NULL, col="red", len=100,
-##'     add=FALSE, border.col=NULL, border.lwd=1,
-##'     fill="lightgrey", main, lwd=2, lty=1, xlab="Data",
-##'     ylab="Density", components=c("proportions","curves","null"),
-##'     lty.components=2, lwd.components=2, ...) 
+##' @title Class \code{npnorm}
 ##' 
-##'@export npnorm
-##'@export rnpnorm
-##'@export plot.npnorm
+##' @usage
+##' npnorm(v, w = 1)
+##' rnpnorm(n, mix=disc(0), sd=1)
+##' dnpnorm(x, mix=disc(0), sd=1, log=FALSE)
+##' pnpnorm(x, mix=disc(0), sd=1, lower.tail=TRUE, log.p=FALSE)
+##'  
+##' @description Class \code{npnorm} can be used to store data that
+##'   will be processed as those of a nonparametric normal
+##'   mixture. There are several functions associated with the class.
+##' 
+##'  Function \code{npnorm} creates an object of class \code{npnorm},
+##'  given values and weights/frequencies.
+##' 
+##'  Function \code{rnpnorm} generates a random sample from a normal
+##'  mixture and saves the data as an object of class \code{npnorm}.
+##' 
+##'  Function \code{dnpnorm} is the density function of a normal
+##'  mixture.
+##' 
+##'  Function \code{pnpnorm} is the distribution function of a normal
+##'  mixture.
+##' 
+##' @aliases npnorm rnpnorm dnpnorm pnpnorm
+##' @param v a numeric vector that stores the values of a sample.
+##' @param w a numeric vector that stores the corresponding
+##'   weights/frequencies of the observations.
+##' @param n the sample size.
+##' @param mix an object of class \code{disc}, for a discrete
+##'   distribution.
+##' @param sd a scalar for the component standard deviation that is
+##'   common to all components.
+##' @param x a numeric vector or an object of class \code{npnorm}.
+##' @param log,log.p logical, for computing the log-values or not.
+##' @param lower.tail logical, for computing the lower tail value or
+##'   not.
+##' @author Yong Wang <yongwang@@auckland.ac.nz>
+##' @seealso \code{\link[lsei]{nnls}}, \code{\link{cnm}},
+##'   \code{\link{cnmms}}, \code{\link{plot.nspmix}}.
+##' @references
+##' 
+##' Wang, Y. (2007). On fast computation of the non-parametric maximum
+##' likelihood estimate of a mixing distribution. \emph{Journal of the
+##' Royal Statistical Society, Ser. B}, \bold{69}, 185-198.
+##' 
+##' @examples
+##' 
+##' mix = disc(pt=c(0,4), pr=c(0.3,0.7))  # a discrete distribution
+##' x = rnpnorm(200, mix, sd=1)
+##' dnpnorm(-2:6, mix, sd=1)
+##' pnpnorm(-2:6, mix, sd=1)
+##' dnpnorm(npnorm(-2:6), mix, sd=1)
+##' pnpnorm(npnorm(-2:6), mix, sd=1)
+##' 
+##' @importFrom stats dnorm pnorm rnorm
+##'  
+##' @export npnorm
+##' @export rnpnorm
+##' @export dnpnorm
+##' @export pnpnorm
 
 npnorm = function(v, w=1) {
   if("npnorm" %in% class(v)) { v$w = v$w * w; v }
   else structure(list(v=v, w=w), class="npnorm")
 }
 
+##' @export 
+
 length.npnorm = function(x) length(x$v)
 
+##' @export 
+
 weight.npnorm = function(x, beta) x$w
+
+##' @export 
 
 gridpoints.npnorm = function(x, beta, grid=100) {
   rx = range(x$v)
@@ -119,6 +108,8 @@ gridpoints.npnorm = function(x, beta, grid=100) {
 
 # beta        Standard deviation, with default value = 1
 # mix         Discrete mixing distribution
+
+##' @export 
 
 initial.npnorm = function(x, beta=NULL, mix=NULL, kmax=NULL) {
   if(is.null(beta)) beta = 1
@@ -137,9 +128,15 @@ initial.npnorm = function(x, beta=NULL, mix=NULL, kmax=NULL) {
   list(beta=beta, mix=mix)
 }
 
+##' @export 
+
 valid.npnorm = function(x, beta, theta) beta > 0
 
+##' @export 
+
 suppspace.npnorm = function(x, beta) c(-Inf,Inf)
+
+##' @export 
 
 logd.npnorm = function(x, beta, pt, which=c(1,0,0)) {
   dl = vector("list", 3)
@@ -159,57 +156,104 @@ logd.npnorm = function(x, beta, pt, which=c(1,0,0)) {
   dl
 }
 
-plot.npnorm = function(x, mix, beta, breaks=NULL, col="red", len=100,
+##' @title Plotting a Nonparametric or Semiparametric Normal Mixture
+##' 
+##' @description Function \code{plot.npnorm} plots the normal mixture.
+##' 
+##' @param x an object of class \code{npnorm}.
+##' @param mix an object of class \code{disc}, for a discrete
+##'   distribution.
+##' @param beta the structural parameter.
+##' @param breaks the rough number bins used for plotting the
+##'   histogram.
+##' @param col the color of the density curve to be plotted.
+##' @param len the number of points roughly used to plot the density
+##'   curve over the interval of length 8 times the component standard
+##'   deviation around each component mean.
+##' @param add if \code{FALSE}, creates a new plot; if \code{TRUE},
+##'   adds the plot to the existing one.
+##' @param border.col color for the border of histogram boxes.
+##' @param border.lwd line width for the border of histogram boxes.
+##' @param fill color to fill in the histogram boxes.
+##' @param components if \code{proportions} (default), also show the
+##'   support points and mixing proportions (in proportional vertical
+##'   lines); if \code{curves}, also show the component density
+##'   curves; if \code{null}, components are not shown.
+##' @param lty.components,lwd.components line type and width for the
+##'   component curves.
+##' @param main,lwd,lty,xlab,ylab arguments for graphical parameters
+##'   (see \code{par}).
+##' @param ... arguments passed on to function \code{plot}.
+##' 
+##' @author Yong Wang <yongwang@@auckland.ac.nz>
+##' 
+##' @seealso \code{\link[lsei]{nnls}}, \code{\link{cnm}},
+##'   \code{\link{cnmms}}, \code{\link{plot.nspmix}}.
+##' 
+##' @aliases plot.npnorm
+##' 
+##' @references
+##' 
+##' Wang, Y. (2007). On fast computation of the non-parametric maximum
+##' likelihood estimate of a mixing distribution. \emph{Journal of the
+##' Royal Statistical Society, Ser. B}, \bold{69}, 185-198.
+##' @examples
+##' 
+##' mix = disc(pt=c(0,4), pr=c(0.3,0.7))  # a discrete distribution
+##' x = rnpnorm(200, mix, sd=1)
+##' plot(x, mix, beta=1)
+##' 
+##' @export 
+
+plot.npnorm = function(x, mix, beta, breaks=NULL, col=2, len=100,
                        add=FALSE, border.col=NULL, border.lwd=1,
                        fill="lightgrey", main, lwd=2, lty=1, xlab="Data",
                        ylab="Density", 
                        components=c("proportions","curves","null"),
                        lty.components=2, lwd.components=2, ...) {
   components = match.arg(components)
-  m = length(mix$pt)
-  z = sort(unique(round(mix$pt +
-                        rep(beta*c(-10*exp(10*10:0), seq(-4,4,len=len),
-                                   10*exp(10*10:0)),
-                            each=m),
-                        ceiling(-log10(beta/20)))))
-  nz = length(z)
-  dj = outer(z, mix$pt, dnorm, sd=beta) * rep(mix$pr, rep(nz,length(mix$pr)))
-  d = rowSums(dj)
+  if(missing(x) && missing(mix))
+    stop('Both arguments "x" and "mix" are missing')
   if(missing(main))
-    main = substitute("npnorm (" * sigma ~ "=" ~ xxx * ")",
-                      list(xxx=signif(beta,3)))
-  if(add || missing(x) || length(x) == 0) {
-    if(add) lines(z, d, col=col, lwd=lwd, lty=lty)
-    else {
-      plot(0, 0, type="n", xlim=range(mix$pt) + beta * c(-3,3), ylim=range(d),
-           xlab=xlab, ylab=ylab, frame.plot=FALSE,
-           main=main, ...)
-      lines(range(z), rep(0,2), col="darkgrey")
-      lines(z, d, col=col, lwd=lwd, lty=lty) 
-    }
+    main = if(!missing(beta)) substitute("npnorm (" * sigma ~ "=" ~ xxx * ")",
+                                         list(xxx=signif(beta,3))) else "npnorm"
+  if(! missing(mix)) {
+    if(missing(beta)) stop('Argument "beta" is missing')
+    m = length(mix$pt)
+    z = sort(unique(round(mix$pt +
+                          rep(beta*c(-10*exp(10*10:0), seq(-4,4,len=len),
+                                     10*exp(10*10:0)), each=m),
+                          ceiling(-log10(beta/20)))))
+    nz = length(z)
+    dj = outer(z, mix$pt, dnorm, sd=beta) * rep(mix$pr, rep(nz,length(mix$pr)))
+    d = rowSums(dj)
+    ylim = range(d)
   }
-  else {
+  else ylim = NULL
+  if(! missing(x) && ! add) {
     if(is.null(breaks)) breaks = 10 + round(sqrt(length(x$v)))
     whist(x$v, x$w, breaks=breaks, freq=FALSE, 
           xlab=xlab, ylab=ylab, main=main, col=fill, border=border.col, 
-          lwd=border.lwd, ylim=range(d), ...)
-    lines(z, d, col=col, lwd=lwd, lty=lty)
+          lwd=border.lwd, ylim=ylim, ...)
   }
-  if(components != "null") {
-    points(mix$pt, rep(0,length(mix$pt)), col=col)
-    switch(components,
-           proportions = {
-             segments(mix$pt, rep(0,m), y1=mix$pr*max(d), col=col, lwd=3)
-           },
-           curves = {
-             if(ncol(dj) > 1) {
-               j2 = 1:floor(ncol(dj)/2) * 2
-               for(j in 1:ncol(dj))     # slow if too many components
-                 lines(z, dj[,j], col=col, lty=lty.components,
-                       lwd=lwd.components)
-             }
-           }
-           )
+  if(! missing(mix)) {
+    if(! missing(x) || add) lines(z, d, col=col, lwd=lwd, lty=lty)
+    else {
+      plot(0, 0, type="n", xlim=range(mix$pt) + beta * c(-3,3), ylim=range(d),
+           xlab=xlab, ylab=ylab, frame.plot=FALSE, main=main, ...)
+      lines(range(z), rep(0,2), col="darkgrey")
+      lines(z, d, col=col, lwd=lwd, lty=lty) 
+    }
+    if(components != "null") {
+      points(mix$pt, rep(0,length(mix$pt)), col=col)
+      switch(components,
+             proportions = 
+               segments(mix$pt, rep(0,m), y1=mix$pr*max(d), col=col, lwd=3),
+             curves = 
+               matplot(z, dj, type="l", col=col, lty=lty.components,
+                       lwd=lwd.components, add=TRUE)
+             )
+    }
   }
 }
 
@@ -239,5 +283,31 @@ pnpnorm = function(x, mix=disc(0), sd=1, lower.tail=TRUE, log.p=FALSE) {
     ma + log(rowSums(exp(logp - ma)))
   }
   else rowSums(exp(logp))
+}
+
+##' @title Sorting of an Object of Class \code{npnorm}
+##' 
+##' @description Function \code{sort.npnorm} sorts an object of class
+##'    \code{npnorm} in the order of the obsersed values.
+##' 
+##' 
+##' @param x an object of class \code{npnorm}.
+##' @param decreasing logical, in the decreasing (default) or
+##'   increasing order.
+##' @param ... arguments passed to function \code{order}.
+##'  
+##' @examples
+##' 
+##' mix = disc(pt=c(0,4), pr=c(0.3,0.7))  # a discrete distribution
+##' x = rnpnorm(20, mix, sd=1)
+##' sort(x)
+##' 
+##'  
+##' @export 
+
+sort.npnorm = function(x, decreasing=FALSE, ...) {
+  i = order(x$v, decreasing=decreasing)
+  structure(list(v=x$v[i], w=if(length(x$w)==1) x$w else x$w[i]),
+            class="npnorm")
 }
 

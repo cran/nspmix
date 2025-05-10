@@ -37,4 +37,3 @@ Journal}, \bold{12}, 67-92.
 \seealso{
 \code{\link{npnorm}},\code{\link{cnm}}.
 }
-\keyword{datasets}

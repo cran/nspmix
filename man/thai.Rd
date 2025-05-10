@@ -40,4 +40,3 @@ Statistical Society, Ser. B}, \bold{69}, 185-198.
 \seealso{
 \code{\link{nppois}},\code{\link{cnm}}.
 }
-\keyword{datasets}

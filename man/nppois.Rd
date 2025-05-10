@@ -3,20 +3,23 @@
 \name{nppois}
 \alias{nppois}
 \alias{rnppois}
-\alias{plot.nppois}
-\title{Class `nppois'}
+\alias{dnppois}
+\alias{pnppois}
+\title{Class \code{nppois}}
 \usage{
-nppois(v, w=1)
-rnppois(n, mix=disc(1))
-\method{plot}{nppois}(x, mix, beta, col="red", add=FALSE,
-    components=TRUE, main="nppois", lwd=1, lty=1, xlab="Data",
-    ylab="Density", ...)
+nppois(v, w=1, grouping=TRUE)
+rnppois(n, mix=disc(1), ...)
+dnppois(x, mix=disc(1), log=FALSE)
+pnppois(x, mix=disc(1), lower.tail=TRUE, log.p=FALSE)
 }
 \arguments{
 \item{v}{a numeric vector that stores the values of a sample.}
 
-\item{w}{a numeric vector that stores the corresponding weights/frequencies
-of the observations.}
+\item{w}{a numeric vector that stores the corresponding
+weights/frequencies of the observations.}
+
+\item{grouping}{logical, to use frequencies (w) for identical
+values}
 
 \item{n}{the sample size.}
 
@@ -24,58 +27,50 @@ of the observations.}
 
 \item{mix}{an object of class \code{disc}.}
 
-\item{beta}{the structural parameter, which is not really needed for the
-Poisson mixture.}
+\item{log}{logical, to compute the log-values or not.}
 
-\item{col}{the color of the density curve to be plotted.}
+\item{lower.tail, }{=FALSE, if lower.tail values are to be
+returned.}
 
-\item{add}{if \code{FALSE}, creates a new plot; if \code{TRUE}, adds the
-plot to the existing one.}
-
-\item{components}{if \code{TRUE}, also show the support points and mixing
-proportions.}
-
-\item{main, lwd, lty, xlab, ylab}{arguments for graphical parameters (see
-\code{par}).}
+\item{log.p, }{=FALSE, if log probability values are to be
+returned.}
 
 \item{...}{arguments passed on to function \code{plot}.}
 }
 \description{
-Class \code{nppois} is used to store data that will be processed as those of
-a nonparametric Poisson mixture.
-}
-\details{
-Function \code{nppois} creates an object of class \code{nppois}, given
-values and weights/frequencies.
+Class \code{nppois} is used to store data that will
+  be processed as those of a nonparametric Poisson mixture.
 
-Function \code{rnppois} generates a random sample from a Poisson mixture and
-saves the data as an object of class \code{nppois}.
+Function \code{nppois} creates an object of class \code{nppois},
+ given values and weights/frequencies.
 
-Function \code{plot.nppois} plots the Poisson mixture.
+Function \code{rnppois} generates a random sample from a Poisson
+ mixture and saves the data as an object of class \code{nppois}.
 
+Function \code{dnppois} is the density function of a Poisson
+ mixture.
 
-When \code{components=TRUE}, the support points are shown on the horizontal
-line of density 0. The component density curves, weighted appropriately, are
-also shown.
+Function \code{pnppois} is the distribution function of a Poisson
+ mixture.
 }
 \examples{
-
-mix = disc(pt=c(1,4), pr=c(0.3,0.7))
+mix = disc(pt=c(0,4), pr=c(0.3,0.7))  # a discrete distribution
 x = rnppois(200, mix)
-plot(x, mix)
-
+dnppois(0:10, mix)
+pnppois(0:10, mix)
+dnppois(nppois(0:10), mix)
+pnppois(nppois(0:10), mix)
+ 
 }
 \references{
 Wang, Y. (2007). On fast computation of the non-parametric maximum
-likelihood estimate of a mixing distribution. \emph{Journal of the Royal
-Statistical Society, Ser. B}, \bold{69}, 185-198.
+likelihood estimate of a mixing distribution. \emph{Journal of the
+Royal Statistical Society, Ser. B}, \bold{69}, 185-198.
 }
 \seealso{
-\code{\link{nnls}}, \code{\link{cnm}}, \code{\link{cnmms}},
-\code{\link{plot.nspmix}}.
+\code{\link[lsei]{nnls}}, \code{\link{cnm}},
+  \code{\link{cnmms}}, \code{\link{plot.nspmix}}.
 }
 \author{
 Yong Wang <yongwang@auckland.ac.nz>
 }
-\keyword{class}
-\keyword{function}

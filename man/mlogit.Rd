@@ -3,71 +3,75 @@
 \name{mlogit}
 \alias{mlogit}
 \alias{rmlogit}
-\title{Class `mlogit'}
+\title{Class \code{mlogit}}
 \usage{
 mlogit(x)
 rmlogit(k, gi=2, ni=2, pt=0, pr=1, beta=1, X)
 }
 \arguments{
-\item{x}{a numeric matrix with four or more columns that stores clustered
-data.}
+\item{x}{a numeric matrix with four or more columns that stores
+clustered data.}
 
 \item{k}{the number of groups or clusters.}
 
-\item{gi}{a numeric vector that gives the sample size in each group.}
+\item{gi}{a numeric vector that gives the sample size in each
+group.}
 
-\item{ni}{a numeric vector for the number of Bernoulli trials for each
-observation.}
+\item{ni}{a numeric vector for the number of Bernoulli trials for
+each observation.}
 
 \item{pt}{a numeric vector for all the support points.}
 
-\item{pr}{a numeric vector for all the probabilities associated with the
-support points.}
+\item{pr}{a numeric vector for all the probabilities associated
+with the support points.}
 
-\item{beta}{a numeric vector for the fixed coefficients of the covariates of
-the observation.}
+\item{beta}{a numeric vector for the fixed coefficients of the
+covariates of the observation.}
 
-\item{X}{the numeric matrix as the design matrix. If missing, a random
-matrix is created from a normal distribution.}
+\item{X}{the numeric matrix as the design matrix. If missing, a
+random matrix is created from a normal distribution.}
 }
 \description{
-These functions can be used to fit a binomial logistic regression model that
-has a random intercept to clustered observations. Observations in each
-cluster are assumed to have the same intercept, while different clusters may
-have different intercepts. This is a mixed-effects problem.
+These functions can be used to fit a binomial logistic regression
+model that has a random intercept to clustered
+observations. Observations in each cluster are assumed to have the
+same intercept, while different clusters may have different
+intercepts. This is a mixed-effects problem.
 }
 \details{
-Class \code{mlogit} is used to store data for fitting the binomial logistic
-regression model with a random intercept.
+Class \code{mlogit} is used to store data for fitting the binomial
+logistic regression model with a random intercept.
 
-Function \code{mlogit} creates an object of class \code{mlogit}, given a
-matrix with four or more columns that stores, respectively, the
-group/cluster membership (column 1), the number of ones or successes in the
-Bernoulli trials (column 2), the number of the Bernoulli trials (column 3),
-and the covariates (columns 4+).
+Function \code{mlogit} creates an object of class \code{mlogit},
+given a matrix with four or more columns that stores,
+respectively, the group/cluster membership (column 1), the number
+of ones or successes in the Bernoulli trials (column 2), the
+number of the Bernoulli trials (column 3), and the covariates
+(columns 4+).
 
-Function \code{rmlogit} generates a random sample that is saved as an object
+Function \code{rmlogit} generates a random sample that is saved as
+an object of class \code{mlogit}.
+
+
+An object of class \code{mlogit} contains a matrix with four or
+more columns, that stores, respectively, the group/cluster
+membership (column 1), the number of ones or successes in the
+Bernoulli trials (column 2), the number of the Bernoulli trials
+(column 3), and the covariates (columns 4+).
+
+It also has two additional attributes that facilitate the
+computing by function \code{cmmms}. The first attribute is
+\code{ui}, which stores the unique values of group memberships,
+and the second is \code{gi}, the number of observations in each
+unique group.
+
+It is convenient to use function \code{mlogit} to create an object
 of class \code{mlogit}.
-
-
-An object of class \code{mlogit} contains a matrix with four or more
-columns, that stores, respectively, the group/cluster membership (column 1),
-the number of ones or successes in the Bernoulli trials (column 2), the
-number of the Bernoulli trials (column 3), and the covariates (columns 4+).
-
-It also has two additional attributes that facilitate the computing by
-function \code{cmmms}. The first attribute is \code{ui}, which stores the
-unique values of group memberships, and the second is \code{gi}, the number
-of observations in each unique group.
-
-It is convenient to use function \code{mlogit} to create an object of class
-\code{mlogit}.
 }
 \examples{
 
-
 x = rmlogit(k=30, gi=3:5, ni=6:10, pt=c(0,4), pr=c(0.7,0.3),
-           beta=c(0,3))    
+            beta=c(0,3))    
 cnmms(x)
 
 ### Real-world data
@@ -83,18 +87,17 @@ cnmms(mlogit(lungcancer))
 
 }
 \references{
-Kiefer, J. and Wolfowitz, J. (1956). Consistency of the maximum likelihood
-estimator in the presence of infinitely many incidental parameters.
-\emph{Ann. Math. Stat.}, \bold{27}, 886-906.
+Kiefer, J. and Wolfowitz, J. (1956). Consistency of the maximum
+likelihood estimator in the presence of infinitely many incidental
+parameters.  \emph{Ann. Math. Stat.}, \bold{27}, 886-906.
 
-Wang, Y. (2010). Maximum likelihood computation for fitting semiparametric
-mixture models. \emph{Statistics and Computing}, \bold{20}, 75-86.
+Wang, Y. (2010). Maximum likelihood computation for fitting
+semiparametric mixture models. \emph{Statistics and Computing},
+\bold{20}, 75-86.
 }
 \seealso{
-\code{\link{nnls}}, \code{\link{cnmms}}.
+\code{\link[lsei]{nnls}}, \code{\link{cnmms}}.
 }
 \author{
 Yong Wang <yongwang@auckland.ac.nz>
 }
-\keyword{class}
-\keyword{function}

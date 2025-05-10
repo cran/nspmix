@@ -40,4 +40,3 @@ mixture models. \emph{Statistics and Computing}, \bold{20}, 75-86.
 \seealso{
 \code{\link{mlogit}},\code{\link{cnmms}}.
 }
-\keyword{datasets}

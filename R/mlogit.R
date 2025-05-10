@@ -41,89 +41,100 @@ rmlogit = function(k, gi=2, ni=2, pt=0, pr=1, beta=1, X) {
 
 
 
-##'Class `mlogit'
-##'
-##'
-##'These functions can be used to fit a binomial logistic regression model that
-##'has a random intercept to clustered observations. Observations in each
-##'cluster are assumed to have the same intercept, while different clusters may
-##'have different intercepts. This is a mixed-effects problem.
-##'
-##'Class \code{mlogit} is used to store data for fitting the binomial logistic
-##'regression model with a random intercept.
-##'
-##'Function \code{mlogit} creates an object of class \code{mlogit}, given a
-##'matrix with four or more columns that stores, respectively, the
-##'group/cluster membership (column 1), the number of ones or successes in the
-##'Bernoulli trials (column 2), the number of the Bernoulli trials (column 3),
-##'and the covariates (columns 4+).
-##'
-##'Function \code{rmlogit} generates a random sample that is saved as an object
-##'of class \code{mlogit}.
-##'
-##'
-##'An object of class \code{mlogit} contains a matrix with four or more
-##'columns, that stores, respectively, the group/cluster membership (column 1),
-##'the number of ones or successes in the Bernoulli trials (column 2), the
-##'number of the Bernoulli trials (column 3), and the covariates (columns 4+).
-##'
-##'It also has two additional attributes that facilitate the computing by
-##'function \code{cmmms}. The first attribute is \code{ui}, which stores the
-##'unique values of group memberships, and the second is \code{gi}, the number
-##'of observations in each unique group.
-##'
-##'It is convenient to use function \code{mlogit} to create an object of class
-##'\code{mlogit}.
-##'
-##'@aliases mlogit rmlogit
-##'@param x a numeric matrix with four or more columns that stores clustered
-##'data.
-##'@param k the number of groups or clusters.
-##'@param gi a numeric vector that gives the sample size in each group.
-##'@param ni a numeric vector for the number of Bernoulli trials for each
-##'observation.
-##'@param pt a numeric vector for all the support points.
-##'@param pr a numeric vector for all the probabilities associated with the
-##'support points.
-##'@param beta a numeric vector for the fixed coefficients of the covariates of
-##'the observation.
-##'@param X the numeric matrix as the design matrix. If missing, a random
-##'matrix is created from a normal distribution.
-##'@author Yong Wang <yongwang@@auckland.ac.nz>
-##'@seealso \code{\link{nnls}}, \code{\link{cnmms}}.
-##'@references
-##'
-##'Kiefer, J. and Wolfowitz, J. (1956). Consistency of the maximum likelihood
-##'estimator in the presence of infinitely many incidental parameters.
-##'\emph{Ann. Math. Stat.}, \bold{27}, 886-906.
-##'
-##'Wang, Y. (2010). Maximum likelihood computation for fitting semiparametric
-##'mixture models. \emph{Statistics and Computing}, \bold{20}, 75-86.
-##'@keywords class function
-##'@examples
-##'
-##'
-##'x = rmlogit(k=30, gi=3:5, ni=6:10, pt=c(0,4), pr=c(0.7,0.3),
-##'            beta=c(0,3))    
-##'cnmms(x)
-##'
-##'### Real-world data
-##'# Random intercept logistic model
-##'data(toxo)
-##'cnmms(mlogit(toxo))
-##'
-##'data(betablockers)
-##'cnmms(mlogit(betablockers))
-##'
-##'data(lungcancer)
-##'cnmms(mlogit(lungcancer))
-##'
-##'@usage
-##'mlogit(x)
-##'rmlogit(k, gi=2, ni=2, pt=0, pr=1, beta=1, X)
+##' Class \code{mlogit}
 ##' 
-##'@export mlogit
-##'@export rmlogit
+##' 
+##' These functions can be used to fit a binomial logistic regression
+##' model that has a random intercept to clustered
+##' observations. Observations in each cluster are assumed to have the
+##' same intercept, while different clusters may have different
+##' intercepts. This is a mixed-effects problem.
+##' 
+##' Class \code{mlogit} is used to store data for fitting the binomial
+##' logistic regression model with a random intercept.
+##' 
+##' Function \code{mlogit} creates an object of class \code{mlogit},
+##' given a matrix with four or more columns that stores,
+##' respectively, the group/cluster membership (column 1), the number
+##' of ones or successes in the Bernoulli trials (column 2), the
+##' number of the Bernoulli trials (column 3), and the covariates
+##' (columns 4+).
+##' 
+##' Function \code{rmlogit} generates a random sample that is saved as
+##' an object of class \code{mlogit}.
+##' 
+##' 
+##' An object of class \code{mlogit} contains a matrix with four or
+##' more columns, that stores, respectively, the group/cluster
+##' membership (column 1), the number of ones or successes in the
+##' Bernoulli trials (column 2), the number of the Bernoulli trials
+##' (column 3), and the covariates (columns 4+).
+##' 
+##' It also has two additional attributes that facilitate the
+##' computing by function \code{cmmms}. The first attribute is
+##' \code{ui}, which stores the unique values of group memberships,
+##' and the second is \code{gi}, the number of observations in each
+##' unique group.
+##' 
+##' It is convenient to use function \code{mlogit} to create an object
+##' of class \code{mlogit}.
+##' 
+##' @aliases mlogit rmlogit
+##' @param x a numeric matrix with four or more columns that stores
+##'   clustered data.
+##' @param k the number of groups or clusters.
+##' @param gi a numeric vector that gives the sample size in each
+##'   group.
+##' @param ni a numeric vector for the number of Bernoulli trials for
+##'   each observation.
+##' @param pt a numeric vector for all the support points.
+##' @param pr a numeric vector for all the probabilities associated
+##'   with the support points.
+##' @param beta a numeric vector for the fixed coefficients of the
+##'   covariates of the observation.
+##' @param X the numeric matrix as the design matrix. If missing, a
+##'   random matrix is created from a normal distribution.
+##' 
+##' @author Yong Wang <yongwang@@auckland.ac.nz>
+##' 
+##' @seealso \code{\link[lsei]{nnls}}, \code{\link{cnmms}}.
+##' 
+##' @references
+##' 
+##' Kiefer, J. and Wolfowitz, J. (1956). Consistency of the maximum
+##' likelihood estimator in the presence of infinitely many incidental
+##' parameters.  \emph{Ann. Math. Stat.}, \bold{27}, 886-906.
+##' 
+##' Wang, Y. (2010). Maximum likelihood computation for fitting
+##' semiparametric mixture models. \emph{Statistics and Computing},
+##' \bold{20}, 75-86.
+##' 
+##' @examples
+##' 
+##' x = rmlogit(k=30, gi=3:5, ni=6:10, pt=c(0,4), pr=c(0.7,0.3),
+##'             beta=c(0,3))    
+##' cnmms(x)
+##' 
+##' ### Real-world data
+##' # Random intercept logistic model
+##' data(toxo)
+##' cnmms(mlogit(toxo))
+##' 
+##' data(betablockers)
+##' cnmms(mlogit(betablockers))
+##' 
+##' data(lungcancer)
+##' cnmms(mlogit(lungcancer))
+##' 
+##' @usage
+##' 
+##' mlogit(x)
+##' rmlogit(k, gi=2, ni=2, pt=0, pr=1, beta=1, X)
+##'  
+##' @importFrom stats rbinom
+##'  
+##' @export mlogit
+##' @export rmlogit
 
 mlogit = function(x) {
   x1s = sort(x[,1])
@@ -135,11 +146,19 @@ mlogit = function(x) {
   x
 }
 
+##' @export
+
 length.mlogit = function(x) length(attr(x, "ui"))
+
+##' @export 
 
 weight.mlogit = function(x, beta) 1
 
+##' @export 
+
 suppspace.mlogit = function(x, beta) c(-Inf,Inf)
+
+##' @export 
 
 gridpoints.mlogit = function(x, beta, grid=100) {
   xbeta = drop(x[,-(1:3),drop=FALSE] %*% beta)
@@ -153,6 +172,8 @@ gridpoints.mlogit = function(x, beta, grid=100) {
   yn = pmin(pmax(ybar, 0.0001), 0.9999)
   seq(min(log(yn/(1-yn))-xbeta.max), max(log(yn/(1-yn))-xbeta.min), len=grid)
 }
+
+##' @export 
 
 initial.mlogit = function(x, beta=NULL, mix=NULL, kmax=NULL) {
   if(is.null(beta)) {
@@ -168,9 +189,13 @@ initial.mlogit = function(x, beta=NULL, mix=NULL, kmax=NULL) {
   list(beta=beta, mix=mix)
 }
 
+##' @export 
+
 valid.mlogit = function(x, beta, theta) TRUE
 
-logd.mlogit = function(x, beta, pt, which, eps=1e-10) {
+##' @export 
+
+logd.mlogit = function(x, beta, pt, which) {
   dl = vector("list", 3)
   names(dl) = c("ld","db","dt")
   xij = x[,-(1:3),drop=FALSE]
@@ -179,6 +204,7 @@ logd.mlogit = function(x, beta, pt, which, eps=1e-10) {
   eta = rep(xbeta, length(pt)) + rep(pt, rep(length(xbeta), length(pt)))
   # p = pmin(pmax(1 / (1 + exp(-eta)), eps), 1-eps)   # so no NA is produced
   p = 1 / (1 + exp(-eta))
+  eps = 1e-10
   p = pmax(pmin(p,1-eps), eps)    # To avoid producing NA's
   dim(p) = c(nrow(x), length(pt))
   ui = attr(x, "ui")

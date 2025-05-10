@@ -1,9 +1,11 @@
 Package: nspmix
 Title: Nonparametric and Semiparametric Mixture Estimation
-Version: 1.5-0
-Date: 2020-09-19
-Author: Yong Wang
-Maintainer: Yong Wang <yongwang@auckland.ac.nz>
+Version: 2.0-0
+Date: 2025-05-10
+Authors@R: person(given = "Yong",
+                  family = "Wang",
+	          role = c("aut","cre"),
+	          email = "yongwang@auckland.ac.nz")
 Depends: lsei
 Imports: graphics,methods,stats
 Description: Mainly for maximum likelihood estimation of nonparametric
@@ -15,8 +17,10 @@ Description: Mainly for maximum likelihood estimation of nonparametric
 Encoding: UTF-8
 License: GPL (>= 2)
 URL: https://www.stat.auckland.ac.nz/~yongwang/
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2020-09-19 01:54:01 UTC; yong
+Packaged: 2025-05-10 18:02:02 UTC; ywan076
+Author: Yong Wang [aut, cre]
+Maintainer: Yong Wang <yongwang@auckland.ac.nz>
 Repository: CRAN
-Date/Publication: 2020-09-20 14:40:07 UTC
+Date/Publication: 2025-05-10 18:40:02 UTC

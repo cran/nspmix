@@ -2,7 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{whist}
 \alias{whist}
-\title{Weighted Histograms}
+\title{Weighted Histograms
+
+Plots or computes the histogram with observations with
+multiplicities/weights.
+
+Just like \code{hist}, \code{whist} can either plot the histogram
+or compute the values that define the histogram, by setting
+\code{plot} to \code{TRUE} or \code{FALSE}.
+
+The histogram can either be the one for frequencies or density, by
+setting \code{freq} to \code{TRUE} or \code{FALSE}.}
 \usage{
 whist(
   x,
@@ -16,7 +26,7 @@ whist(
   ylab = NULL,
   main = NULL,
   add = FALSE,
-  col = NULL,
+  col = "lightgray",
   border = NULL,
   lwd = 1,
   ...
@@ -25,25 +35,38 @@ whist(
 \arguments{
 \item{x}{a vector of values for which the histogram is desired.}
 
-\item{w}{a vector of multiplicities/weights for the values in \code{x}.}
+\item{w}{a vector of multiplicities/weights for the values in
+\code{x}.}
 
-\item{breaks, plot, freq, xlim, ylim, xlab, ylab, main, add, col, border, lwd}{These
-arguments have similar functionalities to their namesakes in function
-\code{hist}.}
+\item{breaks, plot, freq, xlim, ylim, xlab, ylab, main, add, col, border, lwd}{These arguments have similar functionalities to their namesakes
+in function \code{hist}.}
 
 \item{...}{arguments passed on to function \code{plot}.}
 }
+\value{
+\item{breaks}{the break points.}
+
+\item{counts}{weighted counts over the intervals determined by
+\code{breaks}}
+
+\item{density}{density values over the intervals determined by
+\code{breaks}}
+
+\item{mids}{midpoints of the intervals determined by
+\code{breaks}}
+}
 \description{
+Weighted Histograms
+
 Plots or computes the histogram with observations with
 multiplicities/weights.
-}
-\details{
-Just like \code{hist}, \code{whist} can either plot the histogram or compute
-the values that define the histogram, by setting \code{plot} to \code{TRUE}
-or \code{FALSE}.
 
-The histogram can either be the one for frequencies or density, by setting
-\code{freq} to \code{TRUE} or \code{FALSE}.
+Just like \code{hist}, \code{whist} can either plot the histogram
+or compute the values that define the histogram, by setting
+\code{plot} to \code{TRUE} or \code{FALSE}.
+
+The histogram can either be the one for frequencies or density, by
+setting \code{freq} to \code{TRUE} or \code{FALSE}.
 }
 \seealso{
 \code{\link{hist}}.
@@ -51,4 +74,3 @@ The histogram can either be the one for frequencies or density, by setting
 \author{
 Yong Wang <yongwang@auckland.ac.nz>
 }
-\keyword{function}

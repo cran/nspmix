@@ -3,101 +3,72 @@
 \name{npnorm}
 \alias{npnorm}
 \alias{rnpnorm}
-\alias{plot.npnorm}
-\title{Class `npnorm'}
+\alias{dnpnorm}
+\alias{pnpnorm}
+\title{Class \code{npnorm}}
 \usage{
-npnorm(v, w=1)
+npnorm(v, w = 1)
 rnpnorm(n, mix=disc(0), sd=1)
-\method{plot}{npnorm}(x, mix, beta, breaks=NULL, col="red", len=100,
-    add=FALSE, border.col=NULL, border.lwd=1,
-    fill="lightgrey", main, lwd=2, lty=1, xlab="Data",
-    ylab="Density", components=c("proportions","curves","null"),
-    lty.components=2, lwd.components=2, ...)
+dnpnorm(x, mix=disc(0), sd=1, log=FALSE)
+pnpnorm(x, mix=disc(0), sd=1, lower.tail=TRUE, log.p=FALSE)
 }
 \arguments{
 \item{v}{a numeric vector that stores the values of a sample.}
 
-\item{w}{a numeric vector that stores the corresponding weights/frequencies
-of the observations.}
+\item{w}{a numeric vector that stores the corresponding
+weights/frequencies of the observations.}
 
 \item{n}{the sample size.}
 
-\item{mix}{an object of class \code{disc}, for a discrete distribution.}
+\item{mix}{an object of class \code{disc}, for a discrete
+distribution.}
 
-\item{beta}{the structural parameter.}
+\item{sd}{a scalar for the component standard deviation that is
+common to all components.}
 
-\item{sd}{a scalar for the component standard deviation that is common to
-all components.}
+\item{x}{a numeric vector or an object of class \code{npnorm}.}
 
-\item{x}{an object of class \code{npnorm}.}
+\item{log, log.p}{logical, for computing the log-values or not.}
 
-\item{breaks}{the rough number bins used for plotting the histogram.}
-
-\item{col}{the color of the density curve to be plotted.}
-
-\item{len}{the number of points roughly used to plot the density curve over
-the interval of length 8 times the component standard deviation around each
-component mean.}
-
-\item{add}{if \code{FALSE}, creates a new plot; if \code{TRUE}, adds the
-plot to the existing one.}
-
-\item{border.col}{color for the border of histogram boxes.}
-
-\item{border.lwd}{line width for the border of histogram boxes.}
-
-\item{fill}{color to fill in the histogram boxes.}
-
-\item{components}{if \code{proportions} (default), also show the support
-points and mixing proportions; if \code{curves}, also show the component
-density curves; if \code{null}, components are not shown.}
-
-\item{lty.components, lwd.components}{line type and width for the component
-curves.}
-
-\item{main, lwd, lty, xlab, ylab}{arguments for graphical parameters (see
-\code{par}).}
-
-\item{...}{arguments passed on to function \code{plot}.}
+\item{lower.tail}{logical, for computing the lower tail value or
+not.}
 }
 \description{
-Class \code{npnorm} can be used to store data that will be
-processed as those of a nonparametric normal mixture. There are
-several functions associated with the class.
-}
-\details{
-Function \code{npnorm} creates an object of class \code{npnorm},
-given values and weights/frequencies.
+Class \code{npnorm} can be used to store data that
+  will be processed as those of a nonparametric normal
+  mixture. There are several functions associated with the class.
 
-Function \code{rnpnorm} generates a random sample from a normal
-mixture and saves the data as an object of class \code{npnorm}.
+ Function \code{npnorm} creates an object of class \code{npnorm},
+ given values and weights/frequencies.
 
-Function \code{plot.npnorm} plots the normal mixture.
+ Function \code{rnpnorm} generates a random sample from a normal
+ mixture and saves the data as an object of class \code{npnorm}.
 
+ Function \code{dnpnorm} is the density function of a normal
+ mixture.
 
-When \code{components="proportions"}, the component means are
-shown on the horizontal line of density 0. The vertical lines
-going upwardly at the support points are proportional to the
-mixing proportions at these points.
+ Function \code{pnpnorm} is the distribution function of a normal
+ mixture.
 }
 \examples{
 
 mix = disc(pt=c(0,4), pr=c(0.3,0.7))  # a discrete distribution
 x = rnpnorm(200, mix, sd=1)
-plot(x, mix, beta=1)
+dnpnorm(-2:6, mix, sd=1)
+pnpnorm(-2:6, mix, sd=1)
+dnpnorm(npnorm(-2:6), mix, sd=1)
+pnpnorm(npnorm(-2:6), mix, sd=1)
 
 }
 \references{
 Wang, Y. (2007). On fast computation of the non-parametric maximum
-likelihood estimate of a mixing distribution. \emph{Journal of the Royal
-Statistical Society, Ser. B}, \bold{69}, 185-198.
+likelihood estimate of a mixing distribution. \emph{Journal of the
+Royal Statistical Society, Ser. B}, \bold{69}, 185-198.
 }
 \seealso{
-\code{\link{nnls}}, \code{\link{cnm}}, \code{\link{cnmms}},
-\code{\link{plot.nspmix}}.
+\code{\link[lsei]{nnls}}, \code{\link{cnm}},
+  \code{\link{cnmms}}, \code{\link{plot.nspmix}}.
 }
 \author{
 Yong Wang <yongwang@auckland.ac.nz>
 }
-\keyword{class}
-\keyword{function}
